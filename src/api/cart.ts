@@ -1,7 +1,7 @@
-const baseURL = "http://localhost:3000/api/cart"; // Thay đổi baseURL theo server của bạn
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const getCart = async () => {
-  const response = await fetch(`${baseURL}/get`, {
+  const response = await fetch(`${API_URL}/api/cart/get`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export const addToCart = async (product: {
   quantity: number;
   img: string;
 }) => {
-  const response = await fetch(`${baseURL}/add`, {
+  const response = await fetch(`${API_URL}/api/cart/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -38,7 +38,7 @@ export const addToCart = async (product: {
 };
 
 export const updateCartItem = async (productId: string, quantity: number) => {
-  const response = await fetch(`${baseURL}/${productId}`, {
+  const response = await fetch(`${API_URL}/api/cart/${productId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -54,7 +54,7 @@ export const updateCartItem = async (productId: string, quantity: number) => {
 };
 
 export const deleteCartItem = async (productId: string) => {
-  const response = await fetch(`${baseURL}/${productId}`, {
+  const response = await fetch(`${API_URL}/api/cart/${productId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export const deleteCartItem = async (productId: string) => {
 };
 
 export const clearCart = async () => {
-  const response = await fetch(`${baseURL}/all`, {
+  const response = await fetch(`${API_URL}/api/cart/all`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -84,7 +84,7 @@ export const clearCart = async () => {
 };
 
 export const searchCartItem = async (productId: string) => {
-  const response = await fetch(`${baseURL}/search/${productId}`, {
+  const response = await fetch(`${API_URL}/api/cart/search/${productId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

@@ -23,7 +23,7 @@ const CategoriesUpdate: React.FC<Params> = ({ params }) => {
   const { register, setValue, handleSubmit } = useForm<CategoryForm>();
   const id = params.categoriesId;
   const router = useRouter();
-
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   // Lấy accessToken từ localStorage hoặc sessionStorage
   useEffect(() => {
     const fetchAccessToken = () => {
@@ -44,7 +44,7 @@ const CategoriesUpdate: React.FC<Params> = ({ params }) => {
 
       try {
         const res = await fetch(
-          `http://localhost:3000/categories/${params.categoriesId}`,
+          `${API_URL}/categories/${params.categoriesId}`,
           {
             method: "GET",
             headers: {
@@ -81,17 +81,14 @@ const CategoriesUpdate: React.FC<Params> = ({ params }) => {
     }
 
     try {
-      const res = await fetch(
-        `http://localhost:3000/categories/${params.categoriesId}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data), // Nếu API không nhận FormData, bạn cần gửi JSON
-        }
-      );
+      const res = await fetch(`${API_URL}/categories/${params.categoriesId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data), // Nếu API không nhận FormData, bạn cần gửi JSON
+      });
       // Log trạng thái và phản hồi
       const responseData = await res.json();
       console.log("Response Status:", res.status);

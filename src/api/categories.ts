@@ -1,9 +1,11 @@
 import axios from "axios";
 import { baseApi } from "./index";
+
 interface Category {
   [x: string]: any;
   Category: [];
 }
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const getAllCategory = async (
   response?: Category[] | null
 ): Promise<Category[] | null> => {
@@ -19,7 +21,7 @@ export const getAllCategory = async (
 
 export const fetchCategories = async () => {
   try {
-    const response = await fetch("http://localhost:3000/categories");
+    const response = await fetch(`${API_URL}/categories`);
     if (!response.ok) {
       throw new Error("Không lấy được danh mục");
     }
@@ -32,9 +34,31 @@ export const fetchCategories = async () => {
   }
 };
 export const getCategories = async (): Promise<Category[]> => {
-  const res = await fetch("http://localhost:3000/categories");
+  const res = await fetch(`${API_URL}/categories`);
   if (!res.ok) throw new Error("Failed to fetch categories");
   return res.json();
+};
+
+export const fetchCategoryById = async (id: string): Promise<any> => {
+  try {
+    return await axios.get(`${API_URL}/categories/${id}`);
+  } catch (error) {
+    console.error("Failed to get category:", error);
+    throw error;
+  }
+};
+export const fetchTotalCategories = async (accessToken: string) => {
+  try {
+    const { data } = await axios.get(`${API_URL}/categories/total-categories`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return data.totalCategories;
+  } catch (error) {
+    console.error("Request failed:", error);
+    throw new Error("Failed to fetch total categories");
+  }
 };
 
 export const deleteCategory = async (
@@ -46,29 +70,5 @@ export const deleteCategory = async (
   } catch (error) {
     console.error("Error deleting category", error);
     return null;
-  }
-};
-export const fetchCategoryById = async (id: string): Promise<any> => {
-  try {
-    return await axios.get(`http://localhost:5000/categories/${id}`);
-  } catch (error) {
-    console.error("Failed to get category:", error);
-    throw error;
-  }
-};
-export const fetchTotalCategories = async (accessToken: string) => {
-  try {
-    const { data } = await axios.get(
-      "http://localhost:3000/categories/total-categories",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    return data.totalCategories;
-  } catch (error) {
-    console.error("Request failed:", error);
-    throw new Error("Failed to fetch total categories");
   }
 };

@@ -16,6 +16,7 @@ const Product: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | string>(
     ""
   );
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const [error, setError] = useState<string>("");
 
   // Fetch danh sách category từ API
@@ -65,7 +66,7 @@ const Product: React.FC = () => {
       }
 
       const encodedCategory = encodeURIComponent((category as Category)._id);
-      const url = `http://localhost:3000/products/category/${encodedCategory}`;
+      const url = `${API_URL}/products/category/${encodedCategory}`;
 
       const { data } = await axios.get(url, {
         headers: {

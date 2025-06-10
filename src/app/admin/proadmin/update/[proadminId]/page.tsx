@@ -13,105 +13,112 @@ interface Params {
 
 const ProductUpdate: React.FC<Params> = ({ params }) => {
   interface Product {
+    _id?: string;
     name: string;
     price: number;
     description: string;
     categoryId: string;
-    img?: string | FileList;
+    imgs?: { _id: string; url: string }[];
   }
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [product, setProduct] = useState<Product | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const { register, setValue, handleSubmit } = useForm<Product>();
+  const { register, setValue, handleSubmit } = useForm<
+    Product & { img?: FileList }
+  >();
   const router = useRouter();
   const id = params.proadminId;
 
   useEffect(() => {
-    // Lấy token từ localStorage hoặc sessionStorage
     const token =
       localStorage.getItem("token") || sessionStorage.getItem("token");
     setAccessToken(token);
 
-    const init = async () => {
-      try {
-        const data = await fetchCategories();
-        setCategories(data);
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-      }
-    };
-    init();
+    fetchCategories()
+      .then(setCategories)
+      .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
   useEffect(() => {
-    // Gọi API lấy thông tin sản phẩm
     const getProduct = async () => {
       if (!accessToken) return;
-
       try {
-        const res = await fetch(
-          `http://localhost:3000/products/detail/${params.proadminId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+        const res = await fetch(`http://localhost:3000/products/detail/${id}`, {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
         if (!res.ok) throw new Error("Không thể lấy thông tin sản phẩm");
+
         const data: Product = await res.json();
         setProduct(data);
 
-        // Set giá trị cho form
         setValue("name", data.name);
         setValue("price", data.price);
         setValue("description", data.description);
         setValue("categoryId", data.categoryId);
 
-        // Xử lý ảnh preview nếu có
-        if (data.img && typeof data.img === "string") {
-          setPreviewImage(`http://localhost:3000/images/${data.img}`);
+        if (data.imgs && data.imgs.length > 0) {
+          setPreviewImage(data.imgs[0].url);
         }
       } catch (err) {
         console.error("Error fetching product:", err);
       }
     };
 
-    if (params.proadminId && accessToken) getProduct();
-  }, [params.proadminId, accessToken, setValue]);
+    if (accessToken && id) getProduct();
+  }, [accessToken, id, setValue]);
 
-  const onSubmit: SubmitHandler<Product> = async (data) => {
-    if (!accessToken) {
-      alert("Token missing");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("price", data.price ? data.price.toString() : "0");
-    formData.append("description", data.description);
-    formData.append("categoryId", data.categoryId);
-
-    const imageFile = data.img instanceof FileList ? data.img[0] : null;
-    if (imageFile) {
-      formData.append("img", imageFile);
-    }
+  const onSubmit: SubmitHandler<Product & { img?: FileList }> = async (
+    data
+  ) => {
+    if (!accessToken) return alert("Token không tồn tại");
 
     try {
-      const res = await fetch(`http://localhost:3000/products/${id}`, {
+      // 1. Cập nhật thông tin sản phẩm
+      const updateRes = await fetch(`http://localhost:3000/products/${id}`, {
         method: "PUT",
         headers: {
+          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        body: formData,
+        body: JSON.stringify({
+          name: data.name,
+          price: data.price,
+          description: data.description,
+          category: data.categoryId,
+        }),
       });
 
-      if (!res.ok) throw new Error("Cập nhật sản phẩm thất bại");
-      alert("Cập nhật sản phẩm thành công");
+      if (!updateRes.ok)
+        throw new Error("Cập nhật thông tin sản phẩm thất bại");
+
+      // 2. Nếu có file ảnh mới thì gọi API riêng để cập nhật
+      const file = data.img?.[0];
+      const imgId = product?.imgs?.[0]?._id;
+
+      if (file && imgId) {
+        const formData = new FormData();
+        formData.append("img", file);
+
+        const uploadRes = await fetch(
+          `http://localhost:3000/products/${id}/images/${imgId}`,
+          {
+            method: "PUT",
+            headers: { Authorization: `Bearer ${accessToken}` },
+            body: formData,
+          }
+        );
+
+        if (!uploadRes.ok) throw new Error("Cập nhật ảnh thất bại");
+      }
+
+      alert("✅ Cập nhật sản phẩm thành công!");
       router.push("/admin/proadmin");
     } catch (err) {
       console.error("Error updating product:", err);
+      alert("❌ Có lỗi xảy ra khi cập nhật sản phẩm.");
     }
   };
 
@@ -119,6 +126,7 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
     const file = e.target.files?.[0];
     if (file) {
       setPreviewImage(URL.createObjectURL(file));
+      setValue("img", e.target.files);
     }
   };
 
@@ -128,10 +136,8 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
           Cập nhật Sản phẩm
         </h2>
-
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Tên Sản phẩm */}
             <div>
               <label className="block mb-2 text-gray-700 text-lg">
                 Tên sản phẩm
@@ -144,7 +150,6 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
               />
             </div>
 
-            {/* Giá */}
             <div>
               <label className="block mb-2 text-gray-700 text-lg">Giá</label>
               <input
@@ -155,7 +160,6 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
               />
             </div>
 
-            {/* Mô tả */}
             <div className="col-span-2">
               <label className="block mb-2 text-gray-700 text-lg">Mô tả</label>
               <textarea
@@ -166,7 +170,6 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
               ></textarea>
             </div>
 
-            {/* Danh mục */}
             <div>
               <label className="block mb-2 text-gray-700 text-lg">
                 Danh mục
@@ -184,7 +187,6 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
               </select>
             </div>
 
-            {/* Tải ảnh */}
             <div>
               <label className="block mb-2 text-gray-700 text-lg">
                 Tải ảnh lên
@@ -193,13 +195,11 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="file"
                 accept="image/*"
-                {...register("img")}
-                onChange={(e) => handleImageChange(e)}
+                onChange={handleImageChange}
               />
             </div>
           </div>
 
-          {/* Xem trước ảnh */}
           <div className="mt-6">
             {previewImage ? (
               <img
@@ -212,7 +212,6 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
             )}
           </div>
 
-          {/* Nút Submit */}
           <button
             type="submit"
             className="mt-6 w-full bg-red-500 text-white font-bold py-2 rounded-lg hover:bg-red-600 transition-all duration-300"

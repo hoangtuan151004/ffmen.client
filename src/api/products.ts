@@ -3,7 +3,7 @@ import { baseApi } from "./index";
 import axios from "axios";
 export const getAllProducts = async (): Promise<Product | null> => {
   try {
-    const response = await baseApi.get<Product>("/products");
+    const response = await baseApi.get<Product>("/products/all");
     return response.data;
   } catch (error) {
     console.error("Error fetching products", error);
@@ -53,12 +53,17 @@ export const relatedProducts = async (id: string): Promise<Data | null> => {
 };
 
 export const updateProduct = async (id: string, formData: FormData) => {
-  const res = await fetch(`http://localhost:3000/products/${id}`, {
-    method: "PUT",
-    body: formData,
-  });
-  if (!res.ok) throw new Error("Failed to update product");
-  return res.json();
+  try {
+    const response = await baseApi.put(`/products/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating product", error);
+    throw error;
+  }
 };
 
 export const deleteProduct = async (
@@ -139,23 +144,6 @@ export const handleImgChange = (
     setPreviewimg(reader.result as string); // Hiển thị ảnh xem trước
   };
   reader.readAsDataURL(file); // Đọc file ảnh
-};
-
-// phân trang
-export const getPaginatedProducts = async (
-  pageNumber: number,
-  limit: number,
-  sortBy: string
-) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:3000/paginated/products?pageNumber=${pageNumber}&limit=${limit}&sortBy=${sortBy}`
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Failed to fetch products:", (error as Error).message);
-    return null;
-  }
 };
 
 export const getProductsByCategory = async (
