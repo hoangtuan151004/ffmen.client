@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
-
+import { Toaster } from "react-hot-toast";
 export default function AdminLayout({
   children,
 }: {
@@ -26,6 +26,8 @@ export default function AdminLayout({
         />
 
         <main className="flex bg-gray-100 p-4 pt-[60px] overflow-auto">
+          <Toaster position="top-right" reverseOrder={false} />
+
           {children}
         </main>
       </div>

@@ -19,7 +19,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen }) => {
     <div
       className="fixed top-0 left-0 h-full bg-white  border-shadow shadow-md text-gray-400 transition-all duration-300 z-[60] flex flex-col"
       style={{
-        width: isMenuOpen ? 165 : 60,
+        width: isMenuOpen ? 165 : 50,
       }}
     >
       <div

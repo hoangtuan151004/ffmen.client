@@ -1,15 +1,21 @@
 import { Data, Product } from "../types";
 import { baseApi } from "./index";
 import axios from "axios";
-export const getAllProducts = async (): Promise<Product | null> => {
+export const getAllProducts = async (
+  page: number = 1,
+  limit: number = 10
+): Promise<Product | null> => {
   try {
-    const response = await baseApi.get<Product>("/products/all");
+    const response = await baseApi.get<Product>("/products/all", {
+      params: { page, limit },
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching products", error);
     return null;
   }
 };
+
 export const getProduct = async (page: number = 1, limit: number = 10) => {
   try {
     const response = await baseApi.get(`/products?page=${page}&limit=${limit}`);

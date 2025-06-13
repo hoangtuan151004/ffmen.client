@@ -5,26 +5,37 @@ export interface Category {
 }
 export interface Data {
   _id: string;
-  category: {
-    categoryId: string;
-    categoryName: string;
-    _id?: string;
-  };
-  description: string;
-  hot: number;
-  img: string;
-  img2: string;
-  img3: string;
-  img4: string;
   name: string;
+  imgs: {
+    _id: string; // từ ObjectId trong MongoDB
+    url: string;
+  }[];
   price: number;
   price2: number;
   quantity: number;
+  variants: {
+    attributes: {
+      size: string;
+      color: string;
+    };
+    price: number;
+    quantity: number;
+    sku?: string;
+    img?: string;
+  }[];
+  category: {
+    categoryId: string;
+    categoryName: string;
+  };
+  hot?: number;
+  view?: number;
+  shortDescription?: string;
+  longDescription?: string;
 }
 
 export type Product = {
-  currentPage?: number;
   data: Data[];
+  currentPage?: number;
   totalPages?: number;
   totalProducts?: number;
 };

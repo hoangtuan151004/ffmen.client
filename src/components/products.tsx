@@ -3,8 +3,9 @@ import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { Product } from "../types";
 type ProductProps = {
-  data: [];
+  data: Product[];
   title?: string;
 };
 const Products: React.FC<ProductProps> = ({ data, title }) => {
