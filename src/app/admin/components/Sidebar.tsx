@@ -17,7 +17,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen }) => {
   return (
     <div
-      className="fixed top-0 left-0 h-full bg-white  border-shadow shadow-md text-gray-400 transition-all duration-300 z-[60] flex flex-col"
+      className="fixed top-0 left-0 h-full bg-white  border-shadow shadow-md text-gray-400 transition-all duration-300 z-[40] flex flex-col"
       style={{
         width: isMenuOpen ? 165 : 50,
       }}

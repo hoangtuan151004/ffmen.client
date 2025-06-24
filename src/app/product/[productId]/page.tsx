@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { getProductDetail, relatedProducts } from "@/api/products";
+import { getProductDetail, relatedProducts } from "@/services/product.service";
 import { Data } from "../../../types";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

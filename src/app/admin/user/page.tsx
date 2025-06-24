@@ -31,7 +31,7 @@ const User: React.FC = () => {
       const token =
         localStorage.getItem("token") || sessionStorage.getItem("token");
 
-      const response = await fetch("http://localhost:3000/api/auth/all-users", {
+      const response = await fetch("http://localhost:5000/api/auth/all-users", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

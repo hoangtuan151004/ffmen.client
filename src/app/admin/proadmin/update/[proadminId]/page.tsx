@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Category } from "../../../../../types";
-import { fetchCategories } from "@/api/categories";
+import { fetchCategories } from "@/services/category.service";
 import { useRouter } from "next/navigation";
 
 interface Params {
@@ -45,7 +45,7 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
     const getProduct = async () => {
       if (!accessToken) return;
       try {
-        const res = await fetch(`http://localhost:3000/products/detail/${id}`, {
+        const res = await fetch(`http://localhost:5000/products/detail/${id}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
 
@@ -77,7 +77,7 @@ const ProductUpdate: React.FC<Params> = ({ params }) => {
 
     try {
       // 1. Cập nhật thông tin sản phẩm
-      const updateRes = await fetch(`http://localhost:3000/products/${id}`, {
+      const updateRes = await fetch(`http://localhost:5000/products/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

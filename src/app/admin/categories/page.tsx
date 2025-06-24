@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { fetchCategories } from "../../../api/categories";
+import { getAllCategories } from "@/services/category.service";
+import { motion, AnimatePresence } from "framer-motion";
+
 import { Category } from "../../../types";
-import { deleteCategory } from "@/api/categories";
+import { deleteCategory } from "@/services/category.service";
 
 const Cateegories: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -31,7 +33,7 @@ const Cateegories: React.FC = () => {
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const data = await fetchCategories();
+        const data = await getAllCategories();
         setCategories(data);
       } catch (err: any) {
         setError(err.message);
@@ -41,7 +43,7 @@ const Cateegories: React.FC = () => {
     getCategories();
   }, []);
   useEffect(() => {
-    fetchCategories();
+    getAllCategories();
     accessTokenFuc();
   }, []);
   const handleClosePopup = () => {
@@ -114,7 +116,7 @@ const Cateegories: React.FC = () => {
         }
 
         // Gọi lại API để làm mới danh sách
-        const updatedCategories = await fetchCategories();
+        const updatedCategories = await getAllCategories();
         setCategories(updatedCategories);
       } catch (error) {
         alert("Lỗi khi xóa danh mục");
@@ -133,94 +135,142 @@ const Cateegories: React.FC = () => {
                 {/* Nút để mở popup */}
                 <button
                   onClick={() => setShowPopup(true)}
-                  className=" text-[16px]rounded-md hover:text-[#b31f2a] transition duration-300 ease-in-out transform hover:scale-125 bg-[#FF5959] text-white rounded px-3 py-1"
+                  className=" bg-blue-400 text-white rounded px-3 py-1 hover:bg-blue-500"
                 >
                   Thêm Danh Mục
                 </button>
 
                 {/* Nền mờ và nội dung popup */}
-                {showPopup && (
-                  <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white rounded-lg shadow-lg p-8 w-[1000px] relative overflow-y-auto max-h-[90vh] pt-[50px] ">
-                      {/* Nút đóng */}
-                      <button
-                        onClick={() => setShowPopup(false)}
-                        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-                      >
-                        &times;
-                      </button>
-
-                      {/* Nội dung của popup */}
-
-                      <Formik
-                        initialValues={{
-                          name: "",
-                          description: "",
+                <AnimatePresence>
+                  {showPopup && (
+                    <motion.div
+                      key="overlay"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="fixed inset-0 z-50 flex justify-end backdrop-blur-sm bg-black/40"
+                      onClick={handleClosePopup}
+                    >
+                      <motion.div
+                        key="popup"
+                        initial={{ x: "100%" }}
+                        animate={{ x: 0 }}
+                        exit={{ x: "100%" }}
+                        transition={{
+                          duration: 0.3,
+                          ease: "easeInOut",
+                          type: "tween",
                         }}
-                        validationSchema={validationSchema}
-                        onSubmit={handleSubmitcate}
+                        className="bg-white w-full sm:w-[90%] md:w-[520px] lg:w-[700px] h-full shadow-xl relative flex flex-col overflow-y-auto"
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        {({ setFieldValue, isSubmitting }) => (
-                          <Form
-                            id="formThemSanPham"
-                            encType="multipart/form-data"
+                        <button
+                          onClick={handleClosePopup}
+                          className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-700"
+                        >
+                          &times;
+                        </button>
+                        <div className="flex-1 overflow-y-auto px-6 py-6">
+                          <Formik
+                            initialValues={{
+                              name: "",
+                              description: "",
+                              parentCategory: "",
+                            }}
+                            validationSchema={validationSchema}
+                            onSubmit={handleSubmitcate}
                           >
-                            {/* Tên sản phẩm */}
-                            <div className="mb-4">
-                              <label
-                                htmlFor="name"
-                                className="block text-black mb-1"
-                              >
-                                Tên danh mục
-                              </label>
-                              <Field
-                                name="name"
-                                type="text"
-                                className="form-control w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Nhập tên sản phẩm"
-                              />
-                              <ErrorMessage
-                                name="name"
-                                component="small"
-                                className="text-red-500"
-                              />
-                            </div>
+                            {({ isSubmitting }) => (
+                              <Form className="space-y-5">
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700">
+                                    Tên danh mục
+                                  </label>
+                                  <Field
+                                    name="name"
+                                    type="text"
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Nhập tên danh mục"
+                                  />
+                                  <ErrorMessage
+                                    name="name"
+                                    component="small"
+                                    className="text-red-500"
+                                  />
+                                </div>
 
-                            {/* Mô tả */}
-                            <div className="mb-4">
-                              <label
-                                htmlFor="description"
-                                className="block text-black mb-1"
-                              >
-                                Mô tả
-                              </label>
-                              <Field
-                                as="textarea"
-                                name="description"
-                                className="form-control w-full px-4 py-2 border border-gray-300 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Nhập mô tả sản phẩm"
-                              />
-                              <ErrorMessage
-                                name="description"
-                                component="small"
-                                className="text-red-500"
-                              />
-                            </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700">
+                                    Mô tả
+                                  </label>
+                                  <Field
+                                    as="textarea"
+                                    name="description"
+                                    rows={3}
+                                    className="mt-1 block w-full text-gray-400 px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Nhập mô tả"
+                                  />
+                                  <ErrorMessage
+                                    name="description"
+                                    component="small"
+                                    className="text-red-500"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Field type="checkbox" name="isSubCategory" />
+                                  <label
+                                    htmlFor="isSubCategory"
+                                    className="text-sm text-gray-700"
+                                  >
+                                    Đây là danh mục con
+                                  </label>
+                                </div>
 
-                            {/* Nút submit */}
-                            <button
-                              type="submit"
-                              disabled={isSubmitting}
-                              className="bg-[#FF5959] rounded-[10px] w-[fit-content] px-[20px] py-[9px] hover:text-[#b31f2a] transition duration-300 ease-in-out transform hover:scale-125 "
-                            >
-                              Thêm
-                            </button>
-                          </Form>
-                        )}
-                      </Formik>
-                    </div>
-                  </div>
-                )}
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700">
+                                    Danh mục cha (tuỳ chọn)
+                                  </label>
+                                  <Field
+                                    as="select"
+                                    name="parentCategory"
+                                    className="mt-1 block w-full text-gray-400 px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                  >
+                                    <option value="">Không có</option>
+                                    {categories
+                                      .filter((cat) => !cat.parentCategory)
+                                      .map((cat) => (
+                                        <option key={cat._id} value={cat._id}>
+                                          {cat.name}
+                                        </option>
+                                      ))}
+                                  </Field>
+                                  <ErrorMessage
+                                    name="parentCategory"
+                                    component="small"
+                                    className="text-red-500"
+                                  />
+                                </div>
+
+                                <div className="pt-2">
+                                  <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full bg-blue-400 text-white rounded px-3 py-1 hover:bg-blue-500  transition duration-200 font-medium"
+                                  >
+                                    {isSubmitting
+                                      ? "Đang thêm..."
+                                      : "Thêm danh mục"}
+                                  </button>
+                                </div>
+                              </Form>
+                            )}
+                          </Formik>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
 
@@ -238,7 +288,7 @@ const Cateegories: React.FC = () => {
           </div>
 
           <div className="table-responsive overflow-auto rounded-lg">
-            <table className="w-full  text-left table-fixed  border-collapse border border-gray-200">
+            <table className="w-full text-left table-fixed border-collapse border border-gray-200">
               <thead className="bg-gray-200">
                 <tr>
                   <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
@@ -248,59 +298,133 @@ const Cateegories: React.FC = () => {
                     Tên
                   </th>
                   <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+                    Icon
+                  </th>
+                  <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
                     Mô tả
+                  </th>
+                  <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+                    Danh mục cha
                   </th>
                   <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
                     Thao tác
                   </th>
                 </tr>
               </thead>
-              {/* Body */}
+
               <tbody>
-                {categories.map((category: any, index: number) => (
-                  <tr
-                    key={category._id}
-                    className="even:bg-gray-50 hover:bg-gray-100 transition duration-200"
-                  >
-                    <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
-                      {index + 1}
-                    </td>
-                    <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
-                      {category.name}
-                    </td>
-                    <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
-                      {category.description.length > 100
-                        ? category.description.substring(0, 100) + "..."
-                        : category.description}
-                    </td>
-                    <td className="py-3 px-4 border border-gray-300 text-sm">
-                      <div className="flex space-x-2">
-                        <Link
-                          href={{
-                            pathname: `/admin/categories/update/${category._id}`,
-                          }}
-                        >
-                          <button
-                            // onClick={() => handleEditProduct(product)}
-                            className="text-blue-500 hover:text-blue-700"
+                {categories
+                  .filter((cate: any) => !cate.parentCategory) // chỉ lấy cha
+                  .map((parent: any, index: number) => {
+                    // tìm con của danh mục này
+                    const children = categories.filter(
+                      (child: any) => child.parentCategory?._id === parent._id
+                    );
+
+                    return (
+                      <React.Fragment key={parent._id}>
+                        {/* Danh mục cha */}
+                        <tr className="bg-gray-50 font-semibold">
+                          <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                            {index + 1}
+                          </td>
+                          <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                            {parent.name}
+                          </td>
+                          <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                            {parent.icon ? (
+                              <img
+                                src={parent.icon}
+                                alt="icon"
+                                className="w-6 h-6"
+                              />
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                          <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                            {parent.description}
+                          </td>
+                          <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                            —
+                          </td>
+                          <td className="py-3 px-4 border border-gray-300 text-sm">
+                            <div className="flex space-x-2">
+                              <Link
+                                href={`/admin/categories/update/${parent._id}`}
+                              >
+                                <button className="text-blue-500 hover:text-blue-700">
+                                  Sửa
+                                </button>
+                              </Link>
+                              <button
+                                className="text-red-500 hover:text-red-700"
+                                onClick={() => handleDelete(parent._id)}
+                              >
+                                Xóa
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+
+                        {/* Danh mục con */}
+                        {children.map((child: any) => (
+                          <tr
+                            key={child._id}
+                            className="hover:bg-gray-100 transition duration-200"
                           >
-                            Sửa
-                          </button>
-                        </Link>
-                        <button
-                          className="text-red-500 hover:text-red-700"
-                          onClick={() => handleDelete(category._id)}
-                        >
-                          Xóa
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                            <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                              {/* Bỏ số thứ tự cho con để tránh nhầm lẫn */}
+                            </td>
+                            <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                              ┗━━ {child.name}
+                            </td>
+                            <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                              {child.icon ? (
+                                <img
+                                  src={child.icon}
+                                  alt="icon"
+                                  className="w-6 h-6"
+                                />
+                              ) : (
+                                "—"
+                              )}
+                            </td>
+                            <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                              {child.description.length > 100
+                                ? child.description.substring(0, 100) + "..."
+                                : child.description}
+                            </td>
+                            <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+                              {parent.name}
+                            </td>
+                            <td className="py-3 px-4 border border-gray-300 text-sm">
+                              <div className="flex space-x-2">
+                                <Link
+                                  href={`/admin/categories/update/${child._id}`}
+                                >
+                                  <button className="text-blue-500 hover:text-blue-700">
+                                    Sửa
+                                  </button>
+                                </Link>
+                                <button
+                                  className="text-red-500 hover:text-red-700"
+                                  onClick={() => handleDelete(child._id)}
+                                >
+                                  Xóa
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    );
+                  })}
+
                 {categories.length === 0 && (
                   <tr>
                     <td
-                      colSpan={4}
+                      colSpan={6}
                       className="py-3 px-4 border border-gray-300 text-center text-sm text-gray-500"
                     >
                       Không có danh mục nào

@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { fetchCategories } from "../../../api/categories";
+import { fetchCategories } from "../../../services/category.service";
 import { Category } from "../../../types";
-import { deleteCategory } from "@/api/categories";
+import { deleteCategory } from "@/services/category.service";
 import axios from "axios";
 const totalOrders: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);

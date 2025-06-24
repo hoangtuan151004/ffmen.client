@@ -7,7 +7,6 @@ import Footer from "../layouts/Footer/Footer";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import { usePathname } from "next/navigation"; // Import hook usePathname
-import Providers from "../redux/Provider";
 
 config.autoAddCss = false;
 
@@ -37,17 +36,15 @@ export default function RootLayout({
     !pathname.includes("/admin");
   return (
     <html lang="en">
-      <Providers>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {showHeaderFooter && <Header />}{" "}
-          {/* Hiển thị Header nếu không phải trang login/register */}
-          {children}
-          {showHeaderFooter && <Footer />}{" "}
-          {/* Hiển thị Footer nếu không phải trang login/register */}
-        </body>
-      </Providers>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        {showHeaderFooter && <Header />}{" "}
+        {/* Hiển thị Header nếu không phải trang login/register */}
+        {children}
+        {showHeaderFooter && <Footer />}{" "}
+        {/* Hiển thị Footer nếu không phải trang login/register */}
+      </body>
     </html>
   );
 }

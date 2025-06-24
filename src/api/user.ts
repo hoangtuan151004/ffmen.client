@@ -1,4 +1,4 @@
-import { baseApi } from "@/api";
+import { baseApi } from "@/services/baseApi";
 import { AuthResponse, LoginRequest } from "@/types";
 import { RegisterRequest } from "@/types";
 import axios from "axios";

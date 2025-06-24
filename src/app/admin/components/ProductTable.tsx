@@ -7,31 +7,31 @@ const ProductTable = ({ products, onDelete, formatCurrency }) => {
       <table className="w-full text-left table-fixed border-collapse border border-gray-200">
         <thead className="bg-gray-200">
           <tr>
-            <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
               STT
             </th>
-            <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
               Hình ảnh
             </th>
-            <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
               Tên
             </th>
-            <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
               Số lượng
             </th>
-            <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
               Giá
             </th>
-            <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
               Giá giảm
             </th>
-            <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
               Danh mục
             </th>
-            <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
               Mô tả
             </th>
-            <th className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
               Thao tác
             </th>
           </tr>
@@ -43,10 +43,10 @@ const ProductTable = ({ products, onDelete, formatCurrency }) => {
               key={product._id}
               className="even:bg-gray-50 hover:bg-gray-100 transition duration-200"
             >
-              <td className="py-3 px-4 border border-gray-300 text-sm text-gray-600">
+              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm text-gray-600">
                 {index + 1}
               </td>
-              <td className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+              <td className="py-[2px] px-2 border border-gray-300 text-sm font-medium text-gray-700 flex items-center justify-center  ">
                 <img
                   loading="lazy"
                   src={product.imgs[0]?.url}
@@ -54,27 +54,28 @@ const ProductTable = ({ products, onDelete, formatCurrency }) => {
                   className="w-14 h-14 object-cover"
                 />
               </td>
-              <td className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+
+              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
                 {product.name}
               </td>
-              <td className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
                 {product.quantity}
               </td>
-              <td className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
                 {formatCurrency(product.price)}
               </td>
-              <td className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
-                {formatCurrency(product.price2)}
+              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
+                {formatCurrency(product.discountPrice)}
               </td>
-              <td className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
-                {product.category.categoryName}
+              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
+                {product.category?.categoryName || "Chưa phân loại"}
               </td>
-              <td className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
                 {product.shortDescription.length > 100
                   ? product.shortDescription.substring(0, 100) + "..."
                   : product.shortDescription}
               </td>
-              <td className="py-3 px-4 border border-gray-300 text-sm font-medium text-gray-700">
+              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
                 <Link href={`/admin/proadmin/update/${product._id}`}>
                   <button className="text-blue-500 hover:text-blue-700">
                     Sửa

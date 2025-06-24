@@ -3,10 +3,6 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { getProductHot } from "@/api/products";
-import { fetchCategoryById } from "@/api/categories";
-import { fetchTotalCategories } from "@/api/categories";
-import { fetchTotalUsers } from "../../api/user";
 const AdminPage: React.FC = () => {
   const [productHot, setProductHot] = useState<any>([]);
   const [statistics, setStatistics] = useState<any>({}); // Thống kê
@@ -20,10 +16,6 @@ const AdminPage: React.FC = () => {
       currency: "VND",
     }).format(value);
   }
-  const fetchProductHot = async () => {
-    const response = await getProductHot();
-    setProductHot(response?.data.slice(0, 5));
-  };
   // Hàm lấy accessToken từ localStorage hoặc sessionStorage
   const accessTokenFuc = () => {
     const token =
@@ -34,139 +26,7 @@ const AdminPage: React.FC = () => {
 
   useEffect(() => {
     accessTokenFuc();
-    fetchTotalProducts();
-    fetchTotalUsers();
-    fetchProductHot();
-    fetchTotalRevenue();
-    // fetchHotProductsAndStatistics(); // Gọi hàm lấy sản phẩm hot và thống kê khi component được mount
   }, []);
-
-  const [totalProducts, setTotalProducts] = useState<number>(0);
-
-  // Hàm lấy tổng số sản phẩm
-  const fetchTotalProducts = async () => {
-    try {
-      const accessToken =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
-
-      if (!accessToken) {
-        console.error("Không tìm thấy access token.");
-        return;
-      }
-
-      const { data } = await axios.get(
-        "http://localhost:3000/products/total-products",
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      setTotalProducts(data.totalProducts);
-      setStatistics({
-        revenue: data.revenue,
-        totalOrders: data.totalOrders,
-      });
-    } catch (error: unknown) {
-      console.error(
-        "Không thể lấy tổng số sản phẩm:",
-        (error as Error).message
-      );
-    }
-  };
-  //lấy tổng số danh mục
-  const [totalCategories, setTotalCategories] = useState<number>(0);
-
-  const [totalUsers, setTotalUsers] = useState<number>(0);
-  const fetchTotalUsers = async () => {
-    try {
-      const accessToken =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
-
-      if (!accessToken) {
-        console.error("Không tìm thấy access token.");
-        return;
-      }
-
-      const { data } = await axios.get(
-        "http://localhost:3000/api/auth/total-users",
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      console.log("Tổng số người dùng:", data.totalUsers);
-      setTotalUsers(data.totalUsers);
-    } catch (error) {
-      console.error("Failed to get total users:", error);
-    }
-  };
-
-  // Hàm lấy tổng số danh mục
-  const fetchTotalCategories = async () => {
-    try {
-      const accessToken =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
-
-      if (!accessToken) {
-        console.error("Không tìm thấy access token.");
-        return;
-      }
-
-      const { data } = await axios.get(
-        "http://localhost:3000/categories/total-categories",
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      console.log("Response Total Categories:", data);
-      setTotalCategories(data.totalCategories);
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Không thể lấy tổng danh mục:", error.message);
-      } else {
-        console.error("Không thể lấy tổng danh mục:", (error as Error).message);
-      }
-    }
-  };
-  const [totalRevenue, setTotalRevenue] = useState<number>(0);
-
-  const fetchTotalRevenue = async () => {
-    try {
-      const accessToken =
-        localStorage.getItem("token") || sessionStorage.getItem("token");
-
-      if (!accessToken) {
-        console.error("Không tìm thấy access token.");
-        return;
-      }
-
-      const { data } = await axios.get(
-        "http://localhost:3000/cart/total-revenue",
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      console.log("Response từ backend:", data); // Debug
-
-      if (data && data.totalRevenue !== undefined) {
-        setTotalRevenue(data.totalRevenue);
-      } else {
-        console.error("Doanh thu không được trả về từ backend.");
-      }
-    } catch (error) {
-      console.error("Không thể lấy doanh thu:", error);
-    }
-  };
 
   return (
     <>
@@ -181,7 +41,7 @@ const AdminPage: React.FC = () => {
               Sản phẩm
             </h3>
             <p className="text-3xl font-bold text-blue-600">
-              <strong>{totalProducts}</strong>
+              <strong>2</strong>
             </p>
           </Link>
           <Link
@@ -192,7 +52,7 @@ const AdminPage: React.FC = () => {
               Danh mục
             </h3>
             <p className="text-3xl font-bold text-blue-600">
-              <strong>{totalCategories}</strong>
+              <strong>2</strong>
             </p>
           </Link>
           <Link
@@ -203,7 +63,7 @@ const AdminPage: React.FC = () => {
               Doanh thu
             </h3>
             <p className="text-3xl font-bold text-blue-600">
-              <strong>{formatCurrency(totalRevenue)}</strong>
+              <strong>1xxx</strong>
             </p>
           </Link>
           <Link
@@ -214,7 +74,7 @@ const AdminPage: React.FC = () => {
               Người dùng
             </h3>
             <p className="text-3xl font-bold text-blue-600">
-              <strong>{totalUsers}</strong>
+              <strong>2</strong>
             </p>
           </Link>
         </div>
@@ -241,7 +101,7 @@ const AdminPage: React.FC = () => {
                   )}
                 </tr>
               </thead>
-
+              {/* 
               <tbody>
                 {productHot.map((product: any, index: number) => (
                   <tr
@@ -253,36 +113,36 @@ const AdminPage: React.FC = () => {
                     </td>
 
                     {/* Tên sản phẩm */}
-                    <td className="py-2 px-6 truncate text-gray-600 text-sm">
+              {/* <td className="py-2 px-6 truncate text-gray-600 text-sm">
                       {product.name}
-                    </td>
+                    </td> */}
 
-                    {/* Giá sản phẩm */}
-                    <td className="py-2 px-6 text-gray-600 text-sm">
+              {/* Giá sản phẩm */}
+              {/* <td className="py-2 px-6 text-gray-600 text-sm">
                       {formatCurrency(product.price)}
-                    </td>
+                    </td> */}
 
-                    {/* Hình ảnh */}
-                    <td className="py-2 px-6">
+              {/* Hình ảnh */}
+              {/* <td className="py-2 px-6">
                       <img
                         src={`http://localhost:3000/images/${product.img}`}
                         alt={product.name}
                         className="w-[100px] h-[100px] object-cover rounded-md"
                       />
-                    </td>
+                    </td> */}
 
-                    {/* Mô tả */}
-                    <td className="py-2 px-6 text-gray-600 text-sm">
+              {/* Mô tả */}
+              {/* <td className="py-2 px-6 text-gray-600 text-sm">
                       {product.description.length > 100
                         ? product.description.substring(0, 100) + "..."
                         : product.description}
-                    </td>
+                    </td> */}
 
-                    {/* Lượt xem */}
-                    <td className="py-2 px-6 text-gray-600 text-sm">
-                      <div className="flex items-center gap-2">
-                        {/* Icon mắt */}
-                        <svg
+              {/* Lượt xem */}
+              {/* <td className="py-2 px-6 text-gray-600 text-sm">
+                      <div className="flex items-center gap-2"> */}
+              {/* Icon mắt */}
+              {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-5 w-5 text-gray-500"
                           viewBox="0 0 24 24"
@@ -297,8 +157,8 @@ const AdminPage: React.FC = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                ))} */}
+              {/* </tbody> */}
             </table>
           </div>
         </div>

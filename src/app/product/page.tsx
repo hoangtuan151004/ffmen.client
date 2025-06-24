@@ -3,8 +3,11 @@ import React, { useEffect, useState } from "react";
 import Products from "../../components/products";
 import ReactPaginate from "react-paginate";
 import { Category, Data } from "@/types/index";
-import { getAllProducts, getProductsByCategory } from "../../api/products";
-import { fetchCategories } from "../../api/categories";
+import {
+  getAllProducts,
+  getProductsByCategory,
+} from "../../services/product.service";
+import { fetchCategories } from "../../services/category.service";
 import axios from "axios";
 
 const Product: React.FC = () => {
