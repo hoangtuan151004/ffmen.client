@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import Sidebar from "../../components/DashBoard/Sidebar";
 import Header from "../../components/DashBoard/Header";
 import { Toaster } from "react-hot-toast";
-export default function AdminLayout({
+
+export default function Layout({
   children,
 }: {
   children: React.ReactNode;
@@ -16,9 +17,6 @@ export default function AdminLayout({
 
       <div
         className="flex-1 flex flex-col min-h-screen transition-all duration-300"
-        style={{
-          marginLeft: isMenuOpen ? 165 : 50,
-        }}
       >
         <Header
           toggleMenu={() => setIsMenuOpen((prev) => !prev)}
