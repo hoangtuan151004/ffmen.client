@@ -1,5 +1,5 @@
 import React from "react";
-import img from "@/assets/images/img.jpg";
+import img from "@/assets/banner/img.jpg";
 const Latest: React.FC = () => {
   return (
     <div className="latest  pt-[111px] pb-[58px]  bg-slate-200 ">

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthResponse, RegisterRequest } from "@/types";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { registerUser } from "../../../api/user";
+import { registerUser } from "../../api/user";
 
 const Register: React.FC = () => {
   const router = useRouter();
@@ -40,7 +40,7 @@ const Register: React.FC = () => {
 
   return (
     <div className="relative flex items-center justify-center min-h-screen w-full px-4">
-      <div className="absolute inset-0 bg-[url('../assets/images/1.jpg')] bg-center bg-cover z-[-1]"></div>
+      <div className="absolute inset-0 bg-[url('/1.jpg')] bg-center bg-cover z-[-1]"></div>
 
       <div className="wrapper w-96 bg-white/10 p-10 rounded-lg shadow-md backdrop-blur-lg">
         <form onSubmit={handleSubmit(onSubmit)}>

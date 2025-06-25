@@ -1,13 +1,13 @@
 import React from "react";
-import bn1 from "@/assets/images/k33.jpeg";
-import bn2 from "@/assets/images/u1.jpeg";
-import bn3 from "@/assets/images/u2.jpeg";
-import bn4 from "@/assets/images/u4.jpeg";
+import bn1 from "@/assets/clothes/k33.jpeg";
+import bn2 from "@/assets/clothes/u1.jpeg";
+import bn3 from "@/assets/clothes/u2.jpeg";
+import bn4 from "@/assets/clothes/u4.jpeg";
 import Link from "next/link";
 export function Banner() {
   return (
     <div
-      className="banner flex bg-cover bg-center bg-no-repeat bg-[url('../assets/images/1.jpg')] overflow-hidden px-[20px] py-[30px] h-auto min-h-[100vh] md:pl-[50px] md:py-[20px] lg:pl-[100px] lg:py-[30px] lg:h-lvh items-center relative
+      className="banner flex bg-cover bg-center bg-no-repeat bg-[url('/1.jpg')] overflow-hidden px-[20px] py-[30px] h-auto min-h-[100vh] md:pl-[50px] md:py-[20px] lg:pl-[100px] lg:py-[30px] lg:h-lvh items-center relative
   lg:flex-row flex-col"
     >
       {/* Overlay */}
