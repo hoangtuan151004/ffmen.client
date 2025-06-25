@@ -1,4 +1,4 @@
-import Header from "../../components/site-header";
+import { SiteHeader } from "../../components/site-header";
 import Footer from "../../components/site-footer";
 
 export default function RootLayout({
@@ -9,7 +9,7 @@ export default function RootLayout({
 
   return (
     <div>
-      <Header />
+      <SiteHeader />
       {children}
       <Footer />
     </div>

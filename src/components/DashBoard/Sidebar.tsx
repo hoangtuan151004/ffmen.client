@@ -9,7 +9,7 @@ import {
   // ClipboardList,
   // Menu,
 } from "lucide-react";
-import logo from "@/assets/images/logo.jpg";
+import logo from "@/assets/logo.jpg";
 interface SidebarProps {
   isMenuOpen: boolean;
 }

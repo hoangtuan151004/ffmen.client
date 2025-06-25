@@ -1,109 +1,44 @@
-"use client";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import logo from "@/assets/logo.jpg";
-import {
-  faUserCircle,
-  faSearch,
-  faShoppingCart,
-} from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link"; 
+import Link from "next/link"
+import { MainNav } from "./main-nav"
+import { MobileNav } from "./mobile-nav"
+import { CommandMenu } from "./command-menu"
+import { Button } from "./ui/button"
+import { siteConfig } from "../config/site"
+import { Icons } from "./icons"
+import { ModeSwitcher } from "./mode-switcher"
 
-const Header: React.FC = () => {
+export function SiteHeader() {
   return (
-    <header className="bg-[#fafafa] sticky top-0 z-50 shadow-md">
-      <div className="container mx-auto px-4 flex items-center justify-between py-[5px] ">
-        <Link href="/">
-          <img src={logo.src} className="w-[50px] md:w-[70px]" alt="Logo" />
-        </Link>
-
-        <div className="hidden md:flex menu">
-          <ul className="flex gap-[20px] md:gap-[42px] items-center text-black">
-            <li>
-              <Link
-                className="hover:text-[#b31f2a] hover:underline decoration-2 decoration-[#b31f2a] transition-all"
-                href="/"
+    <header className="border-grid sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container-wrapper">
+        <div className="container flex h-14 items-center gap-2 md:gap-4">
+          <MainNav />
+          <MobileNav />
+          <div className="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
+            <div className="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
+              <CommandMenu />
+            </div>
+            <nav className="flex items-center gap-0.5">
+              <Button
+                asChild
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 px-0"
               >
-                Trang chủ
-              </Link>
-            </li>
-            <li>
-              <Link
-                className="hover:text-[#b31f2a] hover:underline decoration-2 decoration-[#b31f2a] transition-all"
-                href="/product"
-              >
-                Sản phẩm
-              </Link>
-            </li>
-            <li>
-              <Link
-                className="hover:text-[#b31f2a] hover:underline decoration-2 decoration-[#b31f2a] transition-all"
-                href=""
-              >
-                Tin Tức
-              </Link>
-            </li>
-            <li>
-              <Link
-                className="hover:text-[#b31f2a] hover:underline decoration-2 decoration-[#b31f2a] transition-all"
-                href="/contact"
-              >
-                Liên hệ
-              </Link>
-            </li>
-          </ul>
+                <Link
+                  href={siteConfig.links.github}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Icons.gitHub className="h-4 w-4" />
+                  <span className="sr-only">GitHub</span>
+                </Link>
+              </Button>
+              <ModeSwitcher />
+            </nav>
+          </div>
         </div>
-
-        <div className="flex gap-[15px] md:gap-[25px]">
-          <Link href="">
-            <FontAwesomeIcon
-              icon={faSearch}
-              className="text-[20px] md:text-[25px] text-black hover:text-[#b31f2a]"
-            />
-          </Link>
-
-          <Link className="hover:text-[#b31f2a]" href="/cart">
-            <FontAwesomeIcon
-              icon={faShoppingCart}
-              className="text-[20px] md:text-[25px] text-black hover:text-[#b31f2a]"
-            />
-          </Link>
-          <Link href="/login">
-            <FontAwesomeIcon
-              icon={faUserCircle}
-              className="text-[20px] md:text-[25px] text-black hover:text-[#b31f2a]"
-            />
-          </Link>
-        </div>
-      </div>
-
-      {/* Menu cho mobile */}
-      <div className="block md:hidden bg-white shadow-md">
-        <ul className="flex justify-around py-2 text-black">
-          <li>
-            <Link className="hover:text-[#b31f2a]" href="/home">
-              Trang chủ
-            </Link>
-          </li>
-          <li>
-            <Link className="hover:text-[#b31f2a]" href="/product">
-              Sản phẩm
-            </Link>
-          </li>
-          <li>
-            <Link className="hover:text-[#b31f2a]" href="">
-              Tin Tức
-            </Link>
-          </li>
-          <li>
-            <Link className="hover:text-[#b31f2a]" href="">
-              Liên hệ
-            </Link>
-          </li>
-        </ul>
       </div>
     </header>
-  );
-};
-
-export default Header;
+  )
+}

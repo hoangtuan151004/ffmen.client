@@ -2,11 +2,11 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AuthResponse, RegisterRequest } from "@/types";
+import { RegisterRequest } from "@/types";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { registerUser } from "../../api/user";
 
-const Register: React.FC = () => {
+const Register= () => {
   const router = useRouter();
   const [error, setError] = useState<string>("");
 

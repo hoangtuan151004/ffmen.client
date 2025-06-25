@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAllProducts, deleteProduct } from "@/services/product.service";
 import { Category } from "@/types/index";
-import ProductPopup from "../../../../components/FormInput/ProductPopupForm/PopupPro";
+import ProductPopup from "../../../../components/DashBoard/ProductPopupForm/PopupPro";
 import toast from "react-hot-toast";
-import ProductTable from "../../../../components/FormInput/ProductTable";
+import ProductTable from "../../../../components/DashBoard/ProductTable";
 import ReactPaginate from "react-paginate";
 import { getAllCategories } from "@/services/category.service";
 

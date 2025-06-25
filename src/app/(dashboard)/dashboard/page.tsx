@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Dashboard from "@/components/DashBoard/Dashboard";
 const AdminPage: React.FC = () => {
   const [productHot, setProductHot] = useState<any>([]);
   const [statistics, setStatistics] = useState<any>({}); // Thống kê
@@ -32,7 +33,7 @@ const AdminPage: React.FC = () => {
     <>
       <main className=" bg-gray-100">
         {/* Thống kê */}
-        <div className="flex gap-4 mb-6 mt-6">
+        {/* <div className="flex gap-4 mb-6 mt-6">
           <Link
             href="/admin/proadmin"
             className="bg-white p-6 rounded-lg shadow-lg w-1/4 flex flex-col items-center justify-center hover:shadow-2xl transition-shadow"
@@ -77,10 +78,12 @@ const AdminPage: React.FC = () => {
               <strong>2</strong>
             </p>
           </Link>
-        </div>
+        </div> */}
 
         {/* Sản phẩm hot */}
-        <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
+              {/* 
+
+         <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
           <h3 className="text-xl font-semibold text-gray-700 mb-4">
             Sản phẩm hot
           </h3>
@@ -101,7 +104,6 @@ const AdminPage: React.FC = () => {
                   )}
                 </tr>
               </thead>
-              {/* 
               <tbody>
                 {productHot.map((product: any, index: number) => (
                   <tr
@@ -157,12 +159,13 @@ const AdminPage: React.FC = () => {
                       </div>
                     </td>
                   </tr>
-                ))} */}
-              {/* </tbody> */}
+                ))} 
             </table>
-          </div>
-        </div>
+        </div> 
+          </div>*/}
+
       </main>
+      <Dashboard/>
     </>
   );
 };

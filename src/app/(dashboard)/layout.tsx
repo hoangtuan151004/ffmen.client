@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import Sidebar from "../../components/FormInput/Sidebar";
-import Header from "../../components/FormInput/Header";
+import Sidebar from "../../components/DashBoard/Sidebar";
+import Header from "../../components/DashBoard/Header";
 import { Toaster } from "react-hot-toast";
 export default function AdminLayout({
   children,

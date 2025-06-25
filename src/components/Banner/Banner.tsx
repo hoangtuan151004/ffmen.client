@@ -33,18 +33,22 @@ export function Banner() {
       <div className="banner-right w-full md:w-[40%] lg:w-[50%] relative z-10 md:mt-[15px] lg:mt-0 lg:top-[-40%]">
         <div className="image relative flex md:flex-row lg:flex-col">
           <img
+            alt="banner-image"
             src={bn1.src}
             className="z-[1] absolute object-cover w-[120px] h-[220px] md:w-[150px] md:h-[250px] lg:w-[200px] lg:h-[350px] top-[60px] md:top-[60px] lg:top-[80px] right-[358px] md:right-[258px] lg:right-[398px]"
           />
           <img
+            alt="banner-image"
             src={bn2.src}
             className="z-[3] absolute object-cover w-[120px] h-[220px] md:w-[150px] md:h-[250px] lg:w-[200px] lg:h-[350px] top-[170px] md:top-[170px] lg:top-[280px] right-[280px] md:right-[180px] lg:right-[283px]"
           />
           <img
+            alt="banner-image"
             src={bn3.src}
             className="z-[2] absolute object-cover w-[120px] h-[220px] md:w-[150px] md:h-[250px] lg:w-[200px] lg:h-[350px] top-[0px] md:top-[0px] lg:top-[0px] right-[250px] md:right-[150px] lg:right-[220px]"
           />
           <img
+            alt="banner-image"
             src={bn4.src}
             className="z-[4] absolute object-cover w-[120px] h-[220px] md:w-[150px] md:h-[250px] lg:w-[200px] lg:h-[350px] top-[80px] md:top-[80px] lg:top-[150px] right-[180px] md:right-[80px] lg:right-[100px]"
           />
