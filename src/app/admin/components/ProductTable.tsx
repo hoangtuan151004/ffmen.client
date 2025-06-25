@@ -1,7 +1,15 @@
-import React from "react";
-import Link from "next/link";
+import React, { useState } from "react";
+import ProductDetailPopup from "./ProductDetailPopup"; // 👈 nhớ đúng path nhé
+import { Pencil, Trash2, Eye } from "lucide-react";
+const ProductTable = ({ products, onEdit, onDelete, formatCurrency }) => {
+  const [showDetail, setShowDetail] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
-const ProductTable = ({ products, onDelete, formatCurrency }) => {
+  const handleViewDetail = (product) => {
+    setSelectedProduct(product);
+    setShowDetail(true);
+  };
+
   return (
     <div className="table-responsive overflow-auto rounded-md">
       <table className="w-full text-left table-fixed border-collapse border border-gray-200">
@@ -46,7 +54,7 @@ const ProductTable = ({ products, onDelete, formatCurrency }) => {
               <td className="py-[2px] px-2 border text-center border-gray-300 text-sm text-gray-600">
                 {index + 1}
               </td>
-              <td className="py-[2px] px-2 border border-gray-300 text-sm font-medium text-gray-700 flex items-center justify-center  ">
+              <td className="py-[2px] px-2 border border-gray-300 text-sm font-medium text-gray-700 flex items-center justify-center">
                 <img
                   loading="lazy"
                   src={product.imgs[0]?.url}
@@ -68,7 +76,7 @@ const ProductTable = ({ products, onDelete, formatCurrency }) => {
                 {formatCurrency(product.discountPrice)}
               </td>
               <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-                {product.category?.categoryName || "Chưa phân loại"}
+                {product.category?.name || "Không có danh mục"}
               </td>
               <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
                 {product.shortDescription.length > 100
@@ -76,20 +84,35 @@ const ProductTable = ({ products, onDelete, formatCurrency }) => {
                   : product.shortDescription}
               </td>
               <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-                <Link href={`/admin/proadmin/update/${product._id}`}>
-                  <button className="text-blue-500 hover:text-blue-700">
-                    Sửa
+                <div className="flex justify-center items-center gap-2">
+                  <button
+                    className="text-blue-500 hover:text-blue-700"
+                    title="Sửa"
+                    onClick={() => onEdit(product._id)}
+                  >
+                    <Pencil size={18} />
                   </button>
-                </Link>
-                <button
-                  className="ml-2 text-red-500 hover:text-red-700"
-                  onClick={() => onDelete(product._id)}
-                >
-                  Xóa
-                </button>
+
+                  <button
+                    className="text-red-500 hover:text-red-700"
+                    title="Xoá"
+                    onClick={() => onDelete(product._id)}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+
+                  <button
+                    className="text-green-500 hover:text-green-700"
+                    title="Xem chi tiết"
+                    onClick={() => handleViewDetail(product)}
+                  >
+                    <Eye size={18} />
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
+
           {products.length === 0 && (
             <tr>
               <td
@@ -102,6 +125,15 @@ const ProductTable = ({ products, onDelete, formatCurrency }) => {
           )}
         </tbody>
       </table>
+
+      {/* 👇 Popup chi tiết sản phẩm */}
+      {showDetail && selectedProduct && (
+        <ProductDetailPopup
+          show={showDetail}
+          onClose={() => setShowDetail(false)}
+          product={selectedProduct}
+        />
+      )}
     </div>
   );
 };

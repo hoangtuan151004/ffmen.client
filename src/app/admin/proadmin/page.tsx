@@ -13,7 +13,7 @@ const ProductAdmin: React.FC = () => {
   const defaultValues = {
     name: "",
     price: 0,
-    price2: 0,
+    discountPrice: 0,
     quantity: 0,
     shortDescription: "",
     longDescription: "",
@@ -92,83 +92,149 @@ const ProductAdmin: React.FC = () => {
     setAccessToken(token);
   };
 
-  const handleSubmitpro = async (values, { setSubmitting, resetForm }) => {
-    try {
-      const formData = new FormData();
+  const handleSubmitpro = async (
+    values,
+    { setSubmitting, resetForm },
+    isEditMode
+  ) => {
+    const isEdit = isEditMode && values._id;
+    const formData = new FormData();
 
-      // Thông tin cơ bản
-      formData.append("name", values.name);
-      formData.append("price", values.price.toString());
-      formData.append("discountPrice", values.discountPrice?.toString() || "0");
-      formData.append("quantity", values.quantity.toString());
+    // 1. Thông tin cơ bản
+    formData.append("name", values.name);
+    formData.append("price", values.price.toString());
+    formData.append("discountPrice", values.discountPrice?.toString() || "0");
+    formData.append("quantity", values.quantity.toString());
+    formData.append(
+      "category",
+      JSON.stringify({ categoryId: values.categoryId })
+    );
+    formData.append("categoryName", values.categoryName || "");
+    formData.append("shortDescription", values.shortDescription);
+    formData.append("longDescription", values.longDescription);
+
+    // 2. Xử lý ảnh sản phẩm
+    const urlImages: string[] = [];
+    for (let img of values.imgs) {
+      if (img instanceof File) {
+        formData.append("files", img);
+      } else if (typeof img === "string") {
+        urlImages.push(img);
+      }
+    }
+    if (urlImages.length) {
+      formData.append("imgUrls", JSON.stringify(urlImages));
+    }
+
+    // 3. Biến thể
+    const cleanVariants = values.variants.map((v: any) => ({
+      _id: v._id, // 👈 QUAN TRỌNG để biết là biến thể cũ cần cập nhật
+      price: v.price,
+      quantity: v.quantity,
+      sku: v.sku,
+      attributes: {
+        size: v.attributes?.size || "",
+        color: v.attributes?.color || "",
+      },
+      img: v.img || "",
+    }));
+    formData.append("variants", JSON.stringify(cleanVariants));
+
+    // 4. Danh sách biến thể bị xoá
+    if (values.deletedVariantIds?.length) {
       formData.append(
-        "category",
-        JSON.stringify({ categoryId: values.categoryId })
+        "deletedVariantIds",
+        JSON.stringify(values.deletedVariantIds)
       );
+    }
 
-      formData.append("categoryName", values.categoryName);
-      formData.append("shortDescription", values.shortDescription);
-      formData.append("longDescription", values.longDescription);
-
-      // Xử lý ảnh
-      const urlImages: string[] = [];
-
-      for (let img of values.imgs) {
-        if (img instanceof File) {
-          formData.append("files", img); // 👈 phải là "files" theo multer
-        } else if (typeof img === "string") {
-          urlImages.push(img);
-        }
-      }
-
-      if (urlImages.length) {
-        formData.append("imgUrls", JSON.stringify(urlImages)); // 👈 backend parse cái này
-      }
-
-      // Biến thể
-      const cleanVariants = values.variants.map((v) => ({
-        price: v.price,
-        quantity: v.quantity,
-        sku: v.sku,
-        attributes: {
-          size: v.attributes?.size || "",
-          color: v.attributes?.color || "",
-        },
-        img: v.img || "",
-      }));
-
-      formData.append("variants", JSON.stringify(cleanVariants));
-
-      // Gửi request
+    try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/products`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products${
+          isEdit ? `/${values._id}` : ""
+        }`,
         {
-          method: "POST",
+          method: isEdit ? "PUT" : "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            // ❌ KHÔNG thêm Content-Type nếu dùng FormData
           },
           body: formData,
         }
       );
 
-      if (!res.ok) throw new Error("Thêm sản phẩm thất bại");
+      if (!res.ok)
+        throw new Error(
+          isEdit ? "Cập nhật thất bại" : "Thêm sản phẩm thất bại"
+        );
 
-      toast.success("Thêm sản phẩm thành công!");
+      toast.success(
+        isEdit ? "Cập nhật thành công!" : "Thêm sản phẩm thành công!"
+      );
       fetchProducts?.();
       setPopupState((prev) => ({ ...prev, show: false }));
       resetForm();
     } catch (err) {
-      console.error("Lỗi khi gửi dữ liệu:", err);
-      toast.error("Lỗi khi tải lên file");
+      toast.error("Lỗi khi gửi dữ liệu sản phẩm");
+      console.error(err);
     } finally {
       setSubmitting(false);
     }
   };
 
-  useEffect(() => {
-    console.log("Categories fetched:", categories);
-  }, [categories]);
+  const handleEditProduct = async (productId: string) => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error("Không lấy được sản phẩm");
+
+      const data = await res.json();
+
+      const product = data?.data || data; // tùy backend response
+
+      // Normalize dữ liệu cho form
+      const initData = {
+        name: product.name || "",
+        price: product.price || 0,
+        discountPrice: product.discountPrice || 0,
+        quantity: product.quantity || 0,
+        shortDescription: product.shortDescription || "",
+        longDescription: product.longDescription || "",
+        categoryId: product.category?._id || product.categoryId || "",
+        categoryName: product.category?.name || product.categoryName || "",
+        imgs: product.imgs.map((imgObj: any) => imgObj.url),
+        variants:
+          product.variants?.map((v: any) => ({
+            _id: v._id, // 👈 thêm dòng này rất quan trọng
+            attributes: {
+              size: v.attributes?.size || "",
+              color: v.attributes?.color || "",
+            },
+            price: v.price || 0,
+            quantity: v.quantity || 0,
+            sku: v.sku || "",
+            img: v.img || "",
+            imgFile: null,
+          })) || [],
+        _id: product._id, // cần để PUT
+      };
+
+      setPopupState({
+        show: true,
+        isEdit: true,
+        initData,
+      });
+    } catch (err) {
+      toast.error("Không thể lấy thông tin sản phẩm.");
+      console.error("Fetch product error:", err);
+    }
+  };
 
   const handleDeleteProduct = async (id: string) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
@@ -219,22 +285,23 @@ const ProductAdmin: React.FC = () => {
 
         <ProductTable
           products={products}
+          onEdit={(productId) => handleEditProduct(productId)}
           onDelete={handleDeleteProduct}
           formatCurrency={formatCurrency}
         />
 
         <ReactPaginate
-          previousLabel={"Trước"}
-          nextLabel={"Sau"}
+          previousLabel={"<"}
+          nextLabel={">"}
           breakLabel={"..."}
           pageCount={pageCount}
           marginPagesDisplayed={1}
           pageRangeDisplayed={3}
           onPageChange={handlePageClick}
-          containerClassName="flex justify-center items-center mt-8 space-x-2 text-black"
-          pageClassName="px-3 py-2 text-black bg-white border rounded-lg"
-          previousLinkClassName="px-4 text-black py-2 bg-white text-black border rounded-lg"
-          nextLinkClassName="px-4 py-2 text-black bg-white border rounded-lg"
+          containerClassName="flex justify-end items-center mt-8 space-x-2 text-black"
+          pageClassName="px-2 py-2 text-black bg-white border rounded-lg text-[12px]"
+          previousLinkClassName="px-2 text-black py-2 bg-white text-black border rounded-lg text-[12px]"
+          nextLinkClassName="px-2 py-2 text-black bg-white border rounded-lg text-[12px]"
           disabledClassName="opacity-50 cursor-not-allowed pointer-events-none text-black"
           activeClassName="px-3 py-2 text-gray-400 bg-indigo-600 rounded-lg"
           forcePage={currentPage}

@@ -8,7 +8,11 @@ interface ProductPopupProps {
   showPopup: boolean;
   setShowPopup: (value: boolean) => void;
   categories: any[];
-  handleSubmitpro: (values: any, formikHelpers: any) => void;
+  handleSubmitpro: (
+    values: any,
+    formikHelpers: any,
+    isEditMode: boolean
+  ) => void;
   initialValues?: any;
   isEditMode?: boolean;
 }
@@ -18,6 +22,28 @@ const validationSchema = Yup.object({
   price: Yup.number().required("Giá sản phẩm là bắt buộc"),
   quantity: Yup.number().required("Số lượng là bắt buộc"),
   categoryId: Yup.string().required("Danh mục là bắt buộc"),
+  variants: Yup.array()
+    .of(
+      Yup.object().shape({
+        attributes: Yup.object().shape({
+          size: Yup.string().required("Size là bắt buộc"),
+          color: Yup.string().required("Màu là bắt buộc"),
+        }),
+        price: Yup.number()
+          .typeError("Giá phải là số")
+          .required("Giá là bắt buộc")
+          .moreThan(0, "Giá phải lớn hơn 0"),
+        quantity: Yup.number()
+          .typeError("Số lượng phải là số")
+          .required("Số lượng là bắt buộc")
+          .min(0, "Không thể âm"),
+        sku: Yup.string(),
+        img: Yup.string(),
+      })
+    )
+    .required("Phải có ít nhất một biến thể")
+    .min(1, "Phải có ít nhất một biến thể"),
+  imgs: Yup.array().of(Yup.mixed()).required("Phải có ít nhất một ảnh"),
 });
 
 const ProductPopup: React.FC<ProductPopupProps> = ({
@@ -45,7 +71,9 @@ const ProductPopup: React.FC<ProductPopupProps> = ({
     newImgUrl: "",
     variants: [],
   };
-
+  const handleSubmitWithMode = (values: any, helpers: any) => {
+    handleSubmitpro(values, helpers, isEditMode); // ✅ Đúng
+  };
   return (
     <AnimatePresence>
       {showPopup && (
@@ -78,7 +106,7 @@ const ProductPopup: React.FC<ProductPopupProps> = ({
               <Formik
                 initialValues={initialValues || defaultValues}
                 validationSchema={validationSchema}
-                onSubmit={handleSubmitpro}
+                onSubmit={handleSubmitWithMode}
               >
                 {({ values, setFieldValue, isSubmitting }) => (
                   <Form
@@ -181,9 +209,10 @@ const ProductPopup: React.FC<ProductPopupProps> = ({
                           <div className="flex flex-wrap gap-3 mt-4">
                             {values.imgs.map((img, idx) => {
                               const url =
-                                typeof img === "string"
-                                  ? img
-                                  : URL.createObjectURL(img);
+                                img instanceof File
+                                  ? URL.createObjectURL(img)
+                                  : img;
+
                               return (
                                 <div key={idx} className="relative">
                                   <img
@@ -280,7 +309,16 @@ const ProductPopup: React.FC<ProductPopupProps> = ({
                               <button
                                 type="button"
                                 className="text-red-600 hover:underline text-sm"
-                                onClick={() => remove(index)}
+                                onClick={() => {
+                                  const deletedId = values.variants[index]?._id;
+                                  if (deletedId) {
+                                    setFieldValue("deletedVariantIds", [
+                                      ...(values.deletedVariantIds || []),
+                                      deletedId,
+                                    ]);
+                                  }
+                                  remove(index);
+                                }}
                               >
                                 Xoá biến thể
                               </button>
