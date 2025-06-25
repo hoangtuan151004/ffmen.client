@@ -1,5 +1,5 @@
-import { SiteHeader } from "../../components/site-header";
-import Footer from "../../components/site-footer";
+import SiteHeader from "@/components/site-header";
+import SiteFooter from "@/components/site-footer";
 
 export default function RootLayout({
   children,
@@ -11,7 +11,7 @@ export default function RootLayout({
     <div>
       <SiteHeader />
       {children}
-      <Footer />
+      <SiteFooter />
     </div>
   );
 }
