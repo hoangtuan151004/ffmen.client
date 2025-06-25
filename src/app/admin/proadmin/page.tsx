@@ -237,18 +237,37 @@ const ProductAdmin: React.FC = () => {
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
-      const result = await deleteProduct(id);
-      if (result) {
-        setProducts((prevProducts: any[]) =>
-          prevProducts.filter((product: any) => product._id !== id)
-        );
-        setMessage("Xóa sản phẩm thành công!");
-      } else {
-        setError("Xóa sản phẩm thất bại, vui lòng thử lại sau.");
-      }
-      fetchProducts(currentPage + 1);
-    }
+    toast.custom((t) => (
+      <div className="bg-white p-4 rounded shadow-md border flex flex-col space-y-2 max-w-xs">
+        <p className="text-gray-800 font-medium">
+          Bạn có chắc chắn muốn xoá sản phẩm này không?
+        </p>
+        <div className="flex justify-end space-x-3">
+          <button
+            className="text-sm px-3 py-1 rounded text-gray-800 bg-gray-200 hover:bg-gray-300"
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Huỷ
+          </button>
+          <button
+            className="text-sm px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+            onClick={async () => {
+              toast.dismiss(t.id);
+              const result = await deleteProduct(id);
+              if (result) {
+                setProducts((prev) => prev.filter((p) => p._id !== id));
+                toast.success("🗑️ Đã xoá sản phẩm!");
+                fetchProducts(currentPage + 1);
+              } else {
+                toast.error("❌ Lỗi khi xoá sản phẩm!");
+              }
+            }}
+          >
+            Xác nhận
+          </button>
+        </div>
+      </div>
+    ));
   };
 
   if (!isClient) return null;
