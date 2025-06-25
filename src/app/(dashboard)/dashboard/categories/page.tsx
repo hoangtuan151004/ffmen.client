@@ -6,7 +6,7 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import { getAllCategories } from "@/services/category.service";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { Category } from "../../../types";
+import { Category } from "../../../../types";
 import { deleteCategory } from "@/services/category.service";
 
 const Cateegories: React.FC = () => {

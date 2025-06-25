@@ -1,5 +1,5 @@
 import React from "react";
-import img from "@/assets/images/img5.png";
+import img from "@/assets/banner/img5.png";
 const Banner2: React.FC = () => {
   return (
     <div className="banner-2 flex bg-[#232536]  px-[150px] lg:flex-row flex-col">
