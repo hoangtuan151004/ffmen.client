@@ -18,12 +18,13 @@ export const getAllCategories = async (): Promise<Category[] | []> => {
 // ✅ Xoá danh mục theo ID
 export const deleteCategory = async (
   id: string
-): Promise<{ CategoryDelete: Category } | null> => {
+): Promise<{ success: boolean; message: string; data?: Category } | null> => {
   try {
-    const res = await baseApi.delete<{ CategoryDelete: Category }>(
-      `/categories/${id}`
-    );
-    if (!res.data?.CategoryDelete) return null;
+    const res = await baseApi.delete<{
+      success: boolean;
+      message: string;
+      data?: Category;
+    }>(`/categories/${id}`);
     return res.data;
   } catch (error) {
     console.error("❌ Error deleting category", error);
