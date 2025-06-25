@@ -54,7 +54,7 @@ const ProductTable = ({ products, onEdit, onDelete, formatCurrency }) => {
               <td className="py-[2px] px-2 border text-center border-gray-300 text-sm text-gray-600">
                 {index + 1}
               </td>
-              <td className="py-[2px] px-2 border border-gray-300 text-sm font-medium text-gray-700 flex items-center justify-center">
+              <td className="py-1 px-2 border border-gray-300 text-sm font-medium text-gray-700 flex items-center justify-center">
                 <img
                   loading="lazy"
                   src={product.imgs[0]?.url}

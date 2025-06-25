@@ -5,8 +5,8 @@ import * as Yup from "yup";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { getAllCategories } from "@/services/category.service";
 import { motion, AnimatePresence } from "framer-motion";
-
-import { Category } from "../../../../types";
+import toast from "react-hot-toast";
+import { Category } from "@/types/category.types";
 import { deleteCategory } from "@/services/category.service";
 
 const Cateegories: React.FC = () => {
@@ -18,7 +18,6 @@ const Cateegories: React.FC = () => {
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
-    description: Yup.string().required("Description is required"),
   });
 
   const accessTokenFuc = () => {
@@ -53,7 +52,7 @@ const Cateegories: React.FC = () => {
   // Hàm gọi API để thêm danh mục
   const addCategory = async (values: { name: string; description: string }) => {
     try {
-      const response = await fetch("http://localhost:3000/categories/add", {
+      const response = await fetch("http://localhost:5000/api/categories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,25 +103,53 @@ const Cateegories: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Bạn có chắc chắn muốn xóa danh mục này không?")) {
-      try {
-        const result = await deleteCategory(id);
+  const handleDelete = (id: string) => {
+    toast(
+      (t) => (
+        <div className="p-2">
+          <p className="text-sm font-medium text-gray-800">
+            Bạn có chắc chắn muốn xóa danh mục này không?
+          </p>
+          <div className="mt-3 flex justify-end space-x-2">
+            <button
+              onClick={async () => {
+                toast.dismiss(t.id); // Đóng confirm
 
-        if (result && result.CategoryDelete) {
-          alert("Xóa danh mục thành công!"); // Hiển th�� thông báo từ server
-        } else {
-          alert("Xóa danh mục không thành công!");
-        }
+                try {
+                  const result = await deleteCategory(id);
+                  console.log("✅ Kết quả xoá", result);
+                  if (result?.data) {
+                    toast.success("Xoá danh mục thành công!");
+                    setCategories((prev) =>
+                      prev.filter((cat) => cat._id !== id)
+                    );
+                  } else {
+                    toast.error(result?.message || "Xoá không thành công!");
+                  }
+                } catch (error) {
+                  toast.error("Lỗi khi xóa danh mục!");
+                  console.error(error);
+                }
+              }}
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+            >
+              Xác nhận
+            </button>
 
-        // Gọi lại API để làm mới danh sách
-        const updatedCategories = await getAllCategories();
-        setCategories(updatedCategories);
-      } catch (error) {
-        alert("Lỗi khi xóa danh mục");
-        console.error(error);
+            <button
+              onClick={() => toast.dismiss(t.id)}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-1 rounded text-sm"
+            >
+              Hủy
+            </button>
+          </div>
+        </div>
+      ),
+      {
+        duration: 10000,
+        position: "top-center",
       }
-    }
+    );
   };
 
   return (
@@ -175,6 +202,7 @@ const Cateegories: React.FC = () => {
                           <Formik
                             initialValues={{
                               name: "",
+                              icon: "",
                               description: "",
                               parentCategory: "",
                             }}
@@ -199,6 +227,22 @@ const Cateegories: React.FC = () => {
                                     className="text-red-500"
                                   />
                                 </div>
+                                <div>
+                                  <label className="block text-sm font-medium text-gray-700">
+                                    Icon (URL)
+                                  </label>
+                                  <Field
+                                    name="icon"
+                                    type="text"
+                                    className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="Nhập đường dẫn icon (https://...)"
+                                  />
+                                  <ErrorMessage
+                                    name="icon"
+                                    component="small"
+                                    className="text-red-500"
+                                  />
+                                </div>
 
                                 <div>
                                   <label className="block text-sm font-medium text-gray-700">
@@ -218,38 +262,22 @@ const Cateegories: React.FC = () => {
                                   />
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Field type="checkbox" name="isSubCategory" />
-                                  <label
-                                    htmlFor="isSubCategory"
-                                    className="text-sm text-gray-700"
-                                  >
-                                    Đây là danh mục con
-                                  </label>
-                                </div>
-
-                                <div>
-                                  <label className="block text-sm font-medium text-gray-700">
-                                    Danh mục cha (tuỳ chọn)
-                                  </label>
                                   <Field
                                     as="select"
                                     name="parentCategory"
-                                    className="mt-1 block w-full text-gray-400 px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                    className="form-control w-full text-gray-400 px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                                   >
-                                    <option value="">Không có</option>
+                                    <option value="">
+                                      Không có (danh mục cha)
+                                    </option>
                                     {categories
-                                      .filter((cat) => !cat.parentCategory)
+                                      .filter((cat) => !cat.parentCategory) // chỉ lấy danh mục cha
                                       .map((cat) => (
                                         <option key={cat._id} value={cat._id}>
                                           {cat.name}
                                         </option>
                                       ))}
                                   </Field>
-                                  <ErrorMessage
-                                    name="parentCategory"
-                                    component="small"
-                                    className="text-red-500"
-                                  />
                                 </div>
 
                                 <div className="pt-2">

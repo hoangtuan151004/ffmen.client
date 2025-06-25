@@ -126,21 +126,35 @@ const ProductAdmin: React.FC = () => {
       formData.append("imgUrls", JSON.stringify(urlImages));
     }
 
-    // 3. Biến thể
-    const cleanVariants = values.variants.map((v: any) => ({
-      _id: v._id, // 👈 QUAN TRỌNG để biết là biến thể cũ cần cập nhật
-      price: v.price,
-      quantity: v.quantity,
-      sku: v.sku,
-      attributes: {
-        size: v.attributes?.size || "",
-        color: v.attributes?.color || "",
-      },
-      img: v.img || "",
-    }));
-    formData.append("variants", JSON.stringify(cleanVariants));
+    // 3. Biến thể & ảnh biến thể
+    const cleanVariants = [];
+    const variantImgIndexes: number[] = [];
 
-    // 4. Danh sách biến thể bị xoá
+    values.variants.forEach((v: any, i: number) => {
+      const isFile = v.imgFile instanceof File;
+
+      if (isFile) {
+        formData.append("variantFiles", v.imgFile);
+        variantImgIndexes.push(i);
+      }
+
+      cleanVariants.push({
+        _id: v._id,
+        price: v.price,
+        quantity: v.quantity,
+        sku: v.sku,
+        attributes: {
+          size: v.attributes?.size || "",
+          color: v.attributes?.color || "",
+        },
+        img: isFile ? "" : v.img,
+      });
+    });
+
+    formData.append("variants", JSON.stringify(cleanVariants));
+    formData.append("variantImgIndexes", JSON.stringify(variantImgIndexes));
+
+    // 4. Biến thể bị xoá
     if (values.deletedVariantIds?.length) {
       formData.append(
         "deletedVariantIds",
@@ -235,38 +249,64 @@ const ProductAdmin: React.FC = () => {
     }
   };
 
-  const handleDeleteProduct = async (id: string) => {
-    toast.custom((t) => (
-      <div className="bg-white p-4 rounded shadow-md border flex flex-col space-y-2 max-w-xs">
-        <p className="text-gray-800 font-medium">
-          Bạn có chắc chắn muốn xoá sản phẩm này không?
-        </p>
-        <div className="flex justify-end space-x-3">
-          <button
-            className="text-sm px-3 py-1 rounded text-gray-800 bg-gray-200 hover:bg-gray-300"
-            onClick={() => toast.dismiss(t.id)}
-          >
-            Huỷ
-          </button>
-          <button
-            className="text-sm px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
-            onClick={async () => {
-              toast.dismiss(t.id);
-              const result = await deleteProduct(id);
-              if (result) {
-                setProducts((prev) => prev.filter((p) => p._id !== id));
-                toast.success("🗑️ Đã xoá sản phẩm!");
-                fetchProducts(currentPage + 1);
-              } else {
-                toast.error("❌ Lỗi khi xoá sản phẩm!");
-              }
-            }}
-          >
-            Xác nhận
-          </button>
+  const handleDeleteProduct = (id: string) => {
+    toast(
+      (t) => (
+        <div className="bg-white p-4 rounded shadow-md border flex flex-col space-y-2 max-w-xs">
+          <p className="text-gray-800 font-medium">
+            Bạn có chắc chắn muốn xoá sản phẩm này không?
+          </p>
+          <div className="flex justify-end space-x-3 mt-2">
+            <button
+              className="text-sm px-3 py-1 rounded text-gray-800 bg-gray-200 hover:bg-gray-300"
+              onClick={() => toast.dismiss(t.id)}
+            >
+              Huỷ
+            </button>
+            <button
+              className="text-sm px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+              onClick={async () => {
+                toast.dismiss(t.id);
+                try {
+                  const result = await deleteProduct(id);
+                  if (result) {
+                    setProducts((prev) => prev.filter((p) => p._id !== id));
+                    toast.success("🗑️ Xoá sản phẩm thành công!", {
+                      style: {
+                        border: "1px solid #4ade80",
+                        padding: "12px",
+                        color: "#166534",
+                      },
+                      iconTheme: {
+                        primary: "#4ade80",
+                        secondary: "#f0fdf4",
+                      },
+                    });
+                    fetchProducts(currentPage); // load lại page hiện tại
+                  } else {
+                    toast.error("❌ Xoá sản phẩm không thành công!");
+                  }
+                } catch (err) {
+                  console.error(err);
+                  toast.error("❌ Đã xảy ra lỗi khi xoá!");
+                }
+              }}
+            >
+              Xác nhận
+            </button>
+          </div>
         </div>
-      </div>
-    ));
+      ),
+      {
+        duration: 10000,
+        position: "top-center",
+
+        style: {
+          background: "transparent",
+          boxShadow: "none",
+        },
+      }
+    );
   };
 
   if (!isClient) return null;
