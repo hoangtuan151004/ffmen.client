@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React from "react";
+// import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Product } from "../types";
 type ProductProps = {
   data: Product[];
   title?: string;
 };
 const Products: React.FC<ProductProps> = ({ data, title }) => {
-  const router = useRouter();
+  // const router = useRouter();
   const pathname = usePathname();
 
   function formatCurrency(value: number): string {
@@ -28,7 +28,7 @@ const Products: React.FC<ProductProps> = ({ data, title }) => {
       )}
       {data && data.length > 0 ? (
         <div className="card flex justify-center gap-[50px] flex-wrap  ">
-          {data.map((item: any) => (
+          {data.map((item) => (
             <>
               <div key={item._id}>
                 <Link href={`/product/${item._id}`}>

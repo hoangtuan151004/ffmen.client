@@ -1,13 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Products from "../../components/products";
+import Products from "../../../components/products";
 import ReactPaginate from "react-paginate";
 import { Category, Data } from "@/types/index";
 import {
   getAllProducts,
   getProductsByCategory,
-} from "../../services/product.service";
-import { fetchCategories } from "../../services/category.service";
+} from "../../../services/product.service";
+import { fetchCategories } from "../../../services/category.service";
 import axios from "axios";
 
 const Product: React.FC = () => {
@@ -113,11 +113,10 @@ const Product: React.FC = () => {
           </h2>
           <button
             onClick={() => handleCategoryClick("all")}
-            className={`block w-full text-left py-2 px-4 rounded-lg transition duration-300 text-black ${
-              selectedCategory === ""
+            className={`block w-full text-left py-2 px-4 rounded-lg transition duration-300 text-black ${selectedCategory === ""
                 ? "bg-indigo-100 text-indigo-600"
                 : "hover:bg-gray-100"
-            }`}
+              }`}
           >
             Tất cả
           </button>
@@ -125,11 +124,10 @@ const Product: React.FC = () => {
             <button
               key={category._id}
               onClick={() => handleCategoryClick(category)}
-              className={`block w-full text-left py-2 px-4 rounded-lg transition duration-300 text-black ${
-                selectedCategory === category.name
+              className={`block w-full text-left py-2 px-4 rounded-lg transition duration-300 text-black ${selectedCategory === category.name
                   ? "bg-indigo-100 text-indigo-600"
                   : "hover:bg-gray-100"
-              }`}
+                }`}
             >
               {category.name}
             </button>

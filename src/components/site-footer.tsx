@@ -121,6 +121,7 @@ const Footer: React.FC = () => {
           <div className="flex justify-center ">
             <input
               className="pl-[21px] py-[5px] bg-[#585a5e] rounded-tl-[10px] rounded-bl-[10px] text-gray-500 leading-9 text-[20px]"
+              placeholder="Nhập email của bạn"
               type="text"
               defaultValue="example@email.com"
             />

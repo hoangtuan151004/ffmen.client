@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LoginForm } from "@/types";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { loginUser } from "../../api/user";
+import { loginUser } from "../../../api/user";
 
 const Login: React.FC = () => {
   const [error, setError] = useState<string>("");

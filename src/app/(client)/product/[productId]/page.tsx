@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { getProductDetail, relatedProducts } from "@/services/product.service";
-import { Data } from "../../../types";
+import { Data } from "../../../../types";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";

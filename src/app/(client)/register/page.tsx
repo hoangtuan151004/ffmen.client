@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthResponse, RegisterRequest } from "@/types";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { registerUser } from "../../api/user";
+import { registerUser } from "../../../api/user";
 
 const Register: React.FC = () => {
   const router = useRouter();

@@ -1,8 +1,12 @@
 "use client";
+// import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Header from "../../components/site-header";
+import Footer from "../../components/site-footer";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
+// import { usePathname } from "next/navigation";
 
 config.autoAddCss = false;
 
@@ -29,7 +33,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );

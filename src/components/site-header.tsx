@@ -7,7 +7,7 @@ import {
   faSearch,
   faShoppingCart,
 } from "@fortawesome/free-solid-svg-icons";
-import Link from "next/link"; // Thêm dòng này nếu bạn đang sử dụng Next.js
+import Link from "next/link"; 
 
 const Header: React.FC = () => {
   return (

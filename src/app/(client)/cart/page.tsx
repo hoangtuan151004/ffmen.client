@@ -11,7 +11,7 @@ import { useMemo } from "react";
 import "../globals.css";
 import Link from "next/link";
 import axios from "axios";
-import { Data } from "../../types";
+import { Data } from "../../../types";
 
 interface CartItem {
   _id: string;
