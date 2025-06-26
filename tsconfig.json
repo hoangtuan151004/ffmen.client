@@ -17,8 +17,9 @@
         "name": "next"
       }
     ],
+    "baseUrl": "src", // 👈 để @ trỏ vào thư mục src
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["*"] // 👈 map @/something -> src/something
     }
   },
   "include": [

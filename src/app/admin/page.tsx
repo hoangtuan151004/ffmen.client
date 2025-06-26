@@ -1,10 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Dashboard from "@/components/DashBoard/Dashboard";
-
+import { useRouter } from "next/navigation";
+import axios from "axios";
 const AdminPage: React.FC = () => {
-  const [productHot, setProductHot] = useState<any[]>([]);
+  const [productHot, setProductHot] = useState<any>([]);
+  const [statistics, setStatistics] = useState<any>({}); // Thống kê
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  // Lấy thông tin thống kê và sản phẩm hot
 
   function formatCurrency(value: number): string {
     return new Intl.NumberFormat("vi-VN", {
@@ -12,25 +16,29 @@ const AdminPage: React.FC = () => {
       currency: "VND",
     }).format(value);
   }
+  // Hàm lấy accessToken từ localStorage hoặc sessionStorage
+  const accessTokenFuc = () => {
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
+    setAccessToken(token);
+    console.log("Access Token:", token);
+  };
 
   useEffect(() => {
-    // Example: Fetch productHot data here if needed
-    // setProductHot([...]);
+    accessTokenFuc();
   }, []);
 
   return (
     <>
       <main className=" bg-gray-100">
-        <Dashboard />
-
-        {/* Thong ke */}
+        {/* Thống kê */}
         <div className="flex gap-4 mb-6 mt-6">
           <Link
             href="/admin/proadmin"
             className="bg-white p-6 rounded-lg shadow-lg w-1/4 flex flex-col items-center justify-center hover:shadow-2xl transition-shadow"
           >
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              San pham
+              Sản phẩm
             </h3>
             <p className="text-3xl font-bold text-blue-600">
               <strong>2</strong>
@@ -41,7 +49,7 @@ const AdminPage: React.FC = () => {
             className="bg-white p-6 rounded-lg shadow-lg w-1/4 flex flex-col items-center justify-center hover:shadow-2xl transition-shadow"
           >
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              Danh muc
+              Danh mục
             </h3>
             <p className="text-3xl font-bold text-blue-600">
               <strong>2</strong>
@@ -63,7 +71,7 @@ const AdminPage: React.FC = () => {
             className="bg-white p-6 rounded-lg shadow-lg w-1/4 flex flex-col items-center justify-center hover:shadow-2xl transition-shadow"
           >
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              Nguoi dung
+              Người dùng
             </h3>
             <p className="text-3xl font-bold text-blue-600">
               <strong>2</strong>
@@ -71,17 +79,17 @@ const AdminPage: React.FC = () => {
           </Link>
         </div>
 
-        {/* San pham hot */}
+        {/* Sản phẩm hot */}
         <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
           <h3 className="text-xl font-semibold text-gray-700 mb-4">
-            San pham hot
+            Sản phẩm hot
           </h3>
 
           <div className="overflow-auto">
             <table className="w-full table-fixed border-collapse border border-gray-200">
               <thead className="bg-gray-200 text-gray-600">
                 <tr>
-                  {["STT", "Ten", "Gia", "Hinh anh", "Mo ta", "Luot xem"].map(
+                  {["STT", "Tên", "Giá", "Hình ảnh", "Mô tả", "Lượt xem"].map(
                     (header, idx) => (
                       <th
                         key={idx}
@@ -93,6 +101,7 @@ const AdminPage: React.FC = () => {
                   )}
                 </tr>
               </thead>
+              {/* 
               <tbody>
                 {productHot.map((product: any, index: number) => (
                   <tr
@@ -102,27 +111,38 @@ const AdminPage: React.FC = () => {
                     <td className="py-2 px-6 text-gray-600 text-sm">
                       {index + 1}
                     </td>
-                    <td className="py-2 px-6 truncate text-gray-600 text-sm">
+
+                    {/* Tên sản phẩm */}
+              {/* <td className="py-2 px-6 truncate text-gray-600 text-sm">
                       {product.name}
-                    </td>
-                    <td className="py-2 px-6 text-gray-600 text-sm">
+                    </td> */}
+
+              {/* Giá sản phẩm */}
+              {/* <td className="py-2 px-6 text-gray-600 text-sm">
                       {formatCurrency(product.price)}
-                    </td>
-                    <td className="py-2 px-6">
+                    </td> */}
+
+              {/* Hình ảnh */}
+              {/* <td className="py-2 px-6">
                       <img
                         src={`http://localhost:3000/images/${product.img}`}
                         alt={product.name}
                         className="w-[100px] h-[100px] object-cover rounded-md"
                       />
-                    </td>
-                    <td className="py-2 px-6 text-gray-600 text-sm">
-                      {product.description && product.description.length > 100
+                    </td> */}
+
+              {/* Mô tả */}
+              {/* <td className="py-2 px-6 text-gray-600 text-sm">
+                      {product.description.length > 100
                         ? product.description.substring(0, 100) + "..."
                         : product.description}
-                    </td>
-                    <td className="py-2 px-6 text-gray-600 text-sm">
-                      <div className="flex items-center gap-2">
-                        <svg
+                    </td> */}
+
+              {/* Lượt xem */}
+              {/* <td className="py-2 px-6 text-gray-600 text-sm">
+                      <div className="flex items-center gap-2"> */}
+              {/* Icon mắt */}
+              {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-5 w-5 text-gray-500"
                           viewBox="0 0 24 24"
@@ -137,12 +157,11 @@ const AdminPage: React.FC = () => {
                       </div>
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                ))} */}
+              {/* </tbody> */}
             </table>
           </div>
         </div>
-
       </main>
     </>
   );

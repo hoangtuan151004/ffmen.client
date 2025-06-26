@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { Category } from "../../../../../../types";
+import { Category } from "../../../../../types";
 import { fetchCategories } from "@/services/category.service";
 import { useRouter } from "next/navigation";
 

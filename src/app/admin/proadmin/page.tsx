@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAllProducts, deleteProduct } from "@/services/product.service";
 import { Category } from "@/types/index";
-import ProductPopup from "../../../../components/DashBoard/ProductPopupForm/PopupPro";
+import ProductPopup from "../components/ProductPopupForm/PopupPro";
 import toast from "react-hot-toast";
-import ProductTable from "../../../../components/DashBoard/ProductTable";
+import ProductTable from "../components/ProductTable";
 import ReactPaginate from "react-paginate";
 import { getAllCategories } from "@/services/category.service";
 
@@ -164,7 +164,8 @@ const ProductAdmin: React.FC = () => {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/products${isEdit ? `/${values._id}` : ""
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products${
+          isEdit ? `/${values._id}` : ""
         }`,
         {
           method: isEdit ? "PUT" : "POST",
