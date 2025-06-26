@@ -1,4 +1,9 @@
-"use client";
+
+export const metadata = {
+  title: "Trang chủ",
+  description: "Khám phá sản phẩm, ưu đãi mới nhất và những xu hướng hot nhất hôm nay.",  
+};
+
 
 export default function Home() {
 

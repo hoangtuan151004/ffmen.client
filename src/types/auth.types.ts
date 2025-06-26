@@ -1,27 +1,22 @@
-export interface LoginRequest {
-  username: string;
-  password: string;
-}
-
-export interface RegisterRequest extends LoginRequest {
-  confirm_password: string;
+export type RegisterInputProps = {
+  fullName: string;
+  phone: string;
   email: string;
-  full_name: string;
-}
+  password: string;
+  confirmPassword: string;
+};
 
-export interface AuthData {
-  username: string;
+export type LoginInputProps = {
+  email: string;
+  password: string;
+};
+
+export type UserProps = {
+  avatar: string;
   email: string;
   fullName: string;
-  roles: string[];
-  accessToken: string;
-}
-
-export interface AuthResponse {
-  status: number;
-  data: {
-    accessToken: string;
-    roles: ("user" | "admin")[];
-  };
-  message: string;
-}
+  phoneNumber: string;
+  isActive: boolean;
+  isActiveEmail: boolean;
+  isActivePhone: boolean;
+};

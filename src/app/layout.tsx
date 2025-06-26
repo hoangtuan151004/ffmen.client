@@ -22,7 +22,7 @@ export default function RootLayout({
           disableTransitionOnChange
           enableColorScheme
         >
-          <Toaster position="top-right" reverseOrder={false} />
+          <Toaster reverseOrder={false} />
           {children}
         </ThemeProvider>
       </body>
