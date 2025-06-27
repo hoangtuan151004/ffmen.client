@@ -96,7 +96,7 @@ export default function Register() {
             <TextInput
               label='Phone Number'
               register={register}
-              name='phone'
+              name='phoneNumber'
               type='tel'
               errors={errors}
               placeholder='0123456789'
