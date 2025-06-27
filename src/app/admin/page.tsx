@@ -1,7 +1,8 @@
 "use client";
-import StatCard from "./components/dashboard/StatCard";
-import RevenueChart from "./components/dashboard/RevenueChart";
-import HotProductTable from "./components/dashboard/HotProductTable";
+
+import HotProductTable from "../../components/Admin/dashboard/HotProductTable";
+import RevenueChart from "../../components/Admin/dashboard/RevenueChart";
+import StatCard from "../../components/Admin/dashboard/StatCard";
 
 const DashboardPage = () => {
   const statistics = {

@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAllProducts, deleteProduct } from "@/services/product.service";
 import { Category } from "@/types/index";
-import ProductPopup from "../components/ProductPopupForm/PopupPro";
 import toast from "react-hot-toast";
-import ProductTable from "../components/ProductTable";
+import ProductTable from "../../../components/Admin/ProductTable";
 import ReactPaginate from "react-paginate";
 import { getAllCategories } from "@/services/category.service";
+import ProductPopup from "../../../components/Admin/ProductPopupForm/PopupPro";
 
 const ProductAdmin: React.FC = () => {
   const defaultValues = {

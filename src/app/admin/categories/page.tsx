@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import AddOrEditCategoryPopup from "../components/categoryPopup";
-import CategoryTable from "../components/categoryTable";
+import AddOrEditCategoryPopup from "../../../components/Admin/categoryPopup";
+import CategoryTable from "../../../components/Admin/categoryTable";
 import { getAllCategories, deleteCategory } from "@/services/category.service";
 import { Category } from "@/types";
 const Categories: React.FC = () => {

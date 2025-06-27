@@ -1,5 +1,4 @@
 "use client";
-
 import {
   BarChart,
   Bar,
@@ -30,16 +29,15 @@ const RevenueChart = () => {
   const [revenueData, setRevenueData] = useState<RevenueItem[]>([]);
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   useEffect(() => {
-    // Gọi API lấy doanh thu
     const fetchRevenue = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/orders/revenue`);
+        const res = await fetch(`${API_URL}/api/orders/revenue`, {
+          credentials: "include",
+        });
         if (!res.ok) throw new Error("Lỗi khi lấy dữ liệu doanh thu");
         const data: RevenueItem[] = await res.json();
 
-        // Chuyển month: "2025-06" thành "Th6" hoặc format khác nếu muốn
         const formattedData = data.map((item) => {
-          // lấy tháng cuối
           const monthNum = parseInt(item.month.split("-")[1], 10);
           return {
             month: `Th${monthNum}`,
