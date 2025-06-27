@@ -1,7 +1,17 @@
 // components/FormTextarea.tsx
 import { Field, ErrorMessage } from "formik";
 
-const FormTextarea = ({ name, label, ...props }) => (
+interface FormTextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  name: string;
+  label: string;
+}
+
+const FormTextarea: React.FC<FormTextareaProps> = ({
+  name,
+  label,
+  ...props
+}) => (
   <div className="mb-4">
     <label className="block text-black mb-1">{label}</label>
     <Field

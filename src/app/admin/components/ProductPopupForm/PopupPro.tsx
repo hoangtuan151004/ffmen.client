@@ -92,7 +92,7 @@ const ProductPopup: React.FC<ProductPopupProps> = ({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.3, ease: "easeInOut", type: "tween" }}
-            className="bg-white w-full sm:w-[90%] md:w-[720px] lg:w-[1000px] h-full shadow-xl relative flex flex-col overflow-y-auto"
+            className="bg-white w-full sm:w-[90%] md:w-[520px] lg:w-[900px] h-full shadow-xl relative flex flex-col overflow-y-auto"
             onClick={(e) => e.stopPropagation()} // Ngăn click popup làm đóng
           >
             <button
@@ -141,7 +141,7 @@ const ProductPopup: React.FC<ProductPopupProps> = ({
                           as="select"
                           name="categoryId"
                           className="form-control w-full px-4 py-2 border rounded-md"
-                          onChange={(e) => {
+                          onChange={(e: any) => {
                             const selectedId = e.target.value;
                             setFieldValue("categoryId", selectedId);
                             const cat = categories.find(
@@ -207,7 +207,7 @@ const ProductPopup: React.FC<ProductPopupProps> = ({
                             </button>
                           </div>
                           <div className="flex flex-wrap gap-3 mt-4">
-                            {values.imgs.map((img, idx) => {
+                            {values.imgs.map((img: any, idx: any) => {
                               const url =
                                 img instanceof File
                                   ? URL.createObjectURL(img)
@@ -241,7 +241,7 @@ const ProductPopup: React.FC<ProductPopupProps> = ({
                           <h3 className="text-base font-semibold">
                             Biến thể sản phẩm
                           </h3>
-                          {values.variants.map((_, index) => (
+                          {values.variants.map((_: any, index: any) => (
                             <div
                               key={index}
                               className="p-4 bg-gray-50 rounded-md border space-y-3"

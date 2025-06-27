@@ -1,7 +1,18 @@
 // components/FormInput.tsx
 import { Field, ErrorMessage } from "formik";
 
-const FormInput = ({ name, label, type = "text", ...props }) => (
+interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  name: string;
+  label: string;
+  type?: string;
+}
+
+const FormInput: React.FC<FormInputProps> = ({
+  name,
+  label,
+  type = "text",
+  ...props
+}) => (
   <div>
     <label className="block text-black mb-1">{label}</label>
     <Field

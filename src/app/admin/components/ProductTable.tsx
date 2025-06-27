@@ -1,132 +1,143 @@
-import React, { useState } from "react";
-import ProductDetailPopup from "./ProductDetailPopup"; // 👈 nhớ đúng path nhé
-import { Pencil, Trash2, Eye } from "lucide-react";
-const ProductTable = ({ products, onEdit, onDelete, formatCurrency }) => {
-  const [showDetail, setShowDetail] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+"use client";
 
-  const handleViewDetail = (product) => {
+import * as React from "react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import ProductDetailPopup from "./ProductDetailPopup"; // 👈 đảm bảo đúng path nha
+
+interface Product {
+  _id: string;
+  imgs: { url: string }[];
+  name: string;
+  quantity: number;
+  price: number;
+  discountPrice: number;
+  category?: { name: string };
+  shortDescription: string;
+}
+
+interface ProductTableProps {
+  products: Product[];
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+  formatCurrency: (value: number) => string;
+}
+
+const ProductTable: React.FC<ProductTableProps> = ({
+  products,
+  onEdit,
+  onDelete,
+  formatCurrency,
+}) => {
+  const [showDetail, setShowDetail] = React.useState(false);
+  const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(
+    null
+  );
+
+  const handleViewDetail = (product: Product) => {
     setSelectedProduct(product);
     setShowDetail(true);
   };
 
   return (
-    <div className="table-responsive overflow-auto rounded-md">
-      <table className="w-full text-left table-fixed border-collapse border border-gray-200">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-              STT
-            </th>
-            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-              Hình ảnh
-            </th>
-            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-              Tên
-            </th>
-            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-              Số lượng
-            </th>
-            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-              Giá
-            </th>
-            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-              Giá giảm
-            </th>
-            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
+    <div className="rounded-md border w-full overflow-x-auto">
+      <Table className="w-full min-w-[900px] text-left table-fixed border-collapse border border-gray-200">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-center w-[40px]">STT</TableHead>
+            <TableHead className="text-center">Hình ảnh</TableHead>
+            <TableHead className="text-center">Tên</TableHead>
+            <TableHead className="text-center">SL</TableHead>
+            <TableHead className="text-center">Giá</TableHead>
+            <TableHead className="text-center">Giảm</TableHead>
+            <TableHead className="text-center hidden sm:table-cell">
               Danh mục
-            </th>
-            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
+            </TableHead>
+            <TableHead className="text-center hidden sm:table-cell">
               Mô tả
-            </th>
-            <th className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-              Thao tác
-            </th>
-          </tr>
-        </thead>
+            </TableHead>
+            <TableHead className="text-center">Thao tác</TableHead>
+          </TableRow>
+        </TableHeader>
 
-        <tbody>
-          {products.map((product, index) => (
-            <tr
-              key={product._id}
-              className="even:bg-gray-50 hover:bg-gray-100 transition duration-200"
-            >
-              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm text-gray-600">
-                {index + 1}
-              </td>
-              <td className="py-1 px-2 border border-gray-300 text-sm font-medium text-gray-700 flex items-center justify-center">
-                <img
-                  loading="lazy"
-                  src={product.imgs[0]?.url}
-                  alt={product.name}
-                  className="w-14 h-14 object-cover"
-                />
-              </td>
-
-              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-                {product.name}
-              </td>
-              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-                {product.quantity}
-              </td>
-              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-                {formatCurrency(product.price)}
-              </td>
-              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-                {formatCurrency(product.discountPrice)}
-              </td>
-              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-                {product.category?.name || "Không có danh mục"}
-              </td>
-              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-                {product.shortDescription.length > 100
-                  ? product.shortDescription.substring(0, 100) + "..."
-                  : product.shortDescription}
-              </td>
-              <td className="py-[2px] px-2 border text-center border-gray-300 text-sm font-medium text-gray-700">
-                <div className="flex justify-center items-center gap-2">
-                  <button
-                    className="text-blue-500 hover:text-blue-700"
-                    title="Sửa"
-                    onClick={() => onEdit(product._id)}
-                  >
-                    <Pencil size={18} />
-                  </button>
-
-                  <button
-                    className="text-red-500 hover:text-red-700"
-                    title="Xoá"
-                    onClick={() => onDelete(product._id)}
-                  >
-                    <Trash2 size={18} />
-                  </button>
-
-                  <button
-                    className="text-green-500 hover:text-green-700"
-                    title="Xem chi tiết"
-                    onClick={() => handleViewDetail(product)}
-                  >
-                    <Eye size={18} />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-
-          {products.length === 0 && (
-            <tr>
-              <td
-                colSpan={9}
-                className="py-3 px-4 border border-gray-300 text-center text-sm text-gray-500"
-              >
+        <TableBody>
+          {products.length > 0 ? (
+            products.map((product, index) => (
+              <TableRow key={product._id} className="hover:bg-gray-50">
+                <TableCell className="text-center">{index + 1}</TableCell>
+                <TableCell className="flex justify-center items-center py-2">
+                  <img
+                    src={product.imgs[0]?.url}
+                    alt={product.name}
+                    className="w-14 h-14 object-cover rounded"
+                  />
+                </TableCell>
+                <TableCell className="text-center">{product.name}</TableCell>
+                <TableCell className="text-center">
+                  {product.quantity}
+                </TableCell>
+                <TableCell className="text-center">
+                  {formatCurrency(product.price)}
+                </TableCell>
+                <TableCell className="text-center">
+                  {formatCurrency(product.discountPrice)}
+                </TableCell>
+                <TableCell className="text-center hidden sm:table-cell">
+                  {product.category?.name || "Không có"}
+                </TableCell>
+                <TableCell className="text-center hidden sm:table-cell">
+                  {product.shortDescription.length > 20
+                    ? `${product.shortDescription.slice(0, 20)}...`
+                    : product.shortDescription}
+                </TableCell>
+                <TableCell className="text-center">
+                  <div className="flex items-center justify-center gap-1 sm:gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEdit(product._id)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
+                      <Pencil size={18} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDelete(product._id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <Trash2 size={18} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleViewDetail(product)}
+                      className="text-green-500 hover:text-green-700"
+                    >
+                      <Eye size={18} />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={9} className="text-center text-gray-500 py-4">
                 Không có sản phẩm nào
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
 
-      {/* 👇 Popup chi tiết sản phẩm */}
       {showDetail && selectedProduct && (
         <ProductDetailPopup
           show={showDetail}

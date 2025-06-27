@@ -1,170 +1,172 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { Eye } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import axios from "axios";
-const AdminPage: React.FC = () => {
-  const [productHot, setProductHot] = useState<any>([]);
-  const [statistics, setStatistics] = useState<any>({}); // Thống kê
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  // Lấy thông tin thống kê và sản phẩm hot
 
-  function formatCurrency(value: number): string {
-    return new Intl.NumberFormat("vi-VN", {
+const DashboardPage = () => {
+  const statistics = {
+    products: 120,
+    categories: 8,
+    users: 57,
+    revenue: 120000000,
+  };
+
+  const productHot = [
+    {
+      id: "1",
+      name: "Áo sơ mi trắng",
+      price: 290000,
+      img: "/images/shirt.jpg",
+      description: "Áo sơ mi trắng form rộng",
+      view: 238,
+    },
+    {
+      id: "2",
+      name: "Quần jean rách",
+      price: 350000,
+      img: "/images/jean.jpg",
+      description: "Quần jean rách gối cá tính",
+      view: 156,
+    },
+  ];
+
+  const revenueData = [
+    { month: "Th1", revenue: 12000000 },
+    { month: "Th2", revenue: 18000000 },
+    { month: "Th3", revenue: 9500000 },
+    { month: "Th4", revenue: 22000000 },
+    { month: "Th5", revenue: 15000000 },
+    { month: "Th6", revenue: 18000000 },
+  ];
+
+  const formatCurrency = (value: number): string =>
+    new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
     }).format(value);
-  }
-  // Hàm lấy accessToken từ localStorage hoặc sessionStorage
-  const accessTokenFuc = () => {
-    const token =
-      localStorage.getItem("token") || sessionStorage.getItem("token");
-    setAccessToken(token);
-    console.log("Access Token:", token);
-  };
-
-  useEffect(() => {
-    accessTokenFuc();
-  }, []);
 
   return (
-    <>
-      <main className=" bg-gray-100">
-        {/* Thống kê */}
-        <div className="flex gap-4 mb-6 mt-6">
-          <Link
-            href="/admin/proadmin"
-            className="bg-white p-6 rounded-lg shadow-lg w-1/4 flex flex-col items-center justify-center hover:shadow-2xl transition-shadow"
-          >
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              Sản phẩm
-            </h3>
-            <p className="text-3xl font-bold text-blue-600">
-              <strong>2</strong>
-            </p>
-          </Link>
-          <Link
-            href="/admin/categories"
-            className="bg-white p-6 rounded-lg shadow-lg w-1/4 flex flex-col items-center justify-center hover:shadow-2xl transition-shadow"
-          >
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              Danh mục
-            </h3>
-            <p className="text-3xl font-bold text-blue-600">
-              <strong>2</strong>
-            </p>
-          </Link>
-          <Link
-            href=""
-            className="bg-white p-6 rounded-lg shadow-lg w-1/4 flex flex-col items-center justify-center hover:shadow-2xl transition-shadow"
-          >
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              Doanh thu
-            </h3>
-            <p className="text-3xl font-bold text-blue-600">
-              <strong>1xxx</strong>
-            </p>
-          </Link>
-          <Link
-            href="/admin/user"
-            className="bg-white p-6 rounded-lg shadow-lg w-1/4 flex flex-col items-center justify-center hover:shadow-2xl transition-shadow"
-          >
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              Người dùng
-            </h3>
-            <p className="text-3xl font-bold text-blue-600">
-              <strong>2</strong>
-            </p>
-          </Link>
-        </div>
+    <div className="space-y-6 p-6 w-full">
+      {/* Thống kê tổng quan */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Sản phẩm"
+          value={statistics.products}
+          href="/admin/proadmin"
+        />
+        <StatCard
+          title="Danh mục"
+          value={statistics.categories}
+          href="/admin/categories"
+        />
+        <StatCard
+          title="Doanh thu"
+          value={formatCurrency(statistics.revenue)}
+        />
+        <StatCard
+          title="Người dùng"
+          value={statistics.users}
+          href="/admin/user"
+        />
+      </div>
 
-        {/* Sản phẩm hot */}
-        <div className="bg-white p-6 rounded-lg shadow-lg mb-6">
-          <h3 className="text-xl font-semibold text-gray-700 mb-4">
-            Sản phẩm hot
-          </h3>
+      {/* Biểu đồ doanh thu */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Biểu đồ doanh thu (6 tháng gần nhất)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={revenueData}>
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="revenue" fill="#3b82f6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
-          <div className="overflow-auto">
-            <table className="w-full table-fixed border-collapse border border-gray-200">
-              <thead className="bg-gray-200 text-gray-600">
-                <tr>
-                  {["STT", "Tên", "Giá", "Hình ảnh", "Mô tả", "Lượt xem"].map(
-                    (header, idx) => (
-                      <th
-                        key={idx}
-                        className="py-4 px-6 border-b border-gray-300 text-left text-sm font-medium"
-                      >
-                        {header}
-                      </th>
-                    )
-                  )}
+      {/* Sản phẩm hot */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Sản phẩm hot</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto border-collapse">
+              <thead>
+                <tr className="bg-gray-100 text-sm text-gray-600">
+                  <th className="px-4 py-2 text-left">Tên</th>
+                  <th className="px-4 py-2 text-left">Giá</th>
+                  <th className="px-4 py-2 text-left">Hình ảnh</th>
+                  <th className="px-4 py-2 text-left">Mô tả</th>
+                  <th className="px-4 py-2 text-left">Lượt xem</th>
                 </tr>
               </thead>
-              {/* 
               <tbody>
-                {productHot.map((product: any, index: number) => (
-                  <tr
-                    key={product.id}
-                    className="border-b border-gray-200 text-black hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    <td className="py-2 px-6 text-gray-600 text-sm">
-                      {index + 1}
-                    </td>
-
-                    {/* Tên sản phẩm */}
-              {/* <td className="py-2 px-6 truncate text-gray-600 text-sm">
-                      {product.name}
-                    </td> */}
-
-              {/* Giá sản phẩm */}
-              {/* <td className="py-2 px-6 text-gray-600 text-sm">
-                      {formatCurrency(product.price)}
-                    </td> */}
-
-              {/* Hình ảnh */}
-              {/* <td className="py-2 px-6">
-                      <img
-                        src={`http://localhost:3000/images/${product.img}`}
-                        alt={product.name}
-                        className="w-[100px] h-[100px] object-cover rounded-md"
+                {productHot.map((p, idx) => (
+                  <tr key={p.id} className="border-t">
+                    <td className="px-4 py-2">{p.name}</td>
+                    <td className="px-4 py-2">{formatCurrency(p.price)}</td>
+                    <td className="px-4 py-2">
+                      <Image
+                        src={p.img}
+                        alt={p.name}
+                        width={60}
+                        height={60}
+                        className="object-cover rounded"
                       />
-                    </td> */}
-
-              {/* Mô tả */}
-              {/* <td className="py-2 px-6 text-gray-600 text-sm">
-                      {product.description.length > 100
-                        ? product.description.substring(0, 100) + "..."
-                        : product.description}
-                    </td> */}
-
-              {/* Lượt xem */}
-              {/* <td className="py-2 px-6 text-gray-600 text-sm">
-                      <div className="flex items-center gap-2"> */}
-              {/* Icon mắt */}
-              {/* <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-gray-500"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-                          <path d="M2.458 12C3.732 7.943 7.525 5 12 5c4.475 0 8.268 2.943 9.542 7a9.83 9.83 0 0 1 0 4c-1.274 3.057-5.067 5-9.542 5-4.475 0-8.268-2.943-9.542-7a9.83 9.83 0 0 1 0-4z" />
-                        </svg>
-                        {product.view}
-                      </div>
+                    </td>
+                    <td className="px-4 py-2 text-sm">
+                      {p.description.length > 40
+                        ? p.description.slice(0, 40) + "..."
+                        : p.description}
+                    </td>
+                    <td className="px-4 py-2 flex items-center gap-2">
+                      <Eye size={16} className="text-gray-500" />
+                      {p.view}
                     </td>
                   </tr>
-                ))} */}
-              {/* </tbody> */}
+                ))}
+              </tbody>
             </table>
           </div>
-        </div>
-      </main>
-    </>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
-export default AdminPage;
+export default DashboardPage;
+
+const StatCard = ({
+  title,
+  value,
+  href,
+}: {
+  title: string;
+  value: number | string;
+  href?: string;
+}) => {
+  const content = (
+    <Card className="hover:shadow-md transition-shadow cursor-pointer">
+      <CardHeader>
+        <CardTitle className="text-lg text-gray-700">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-2xl font-bold text-blue-600">{value}</p>
+      </CardContent>
+    </Card>
+  );
+  return href ? <Link href={href}>{content}</Link> : content;
+};

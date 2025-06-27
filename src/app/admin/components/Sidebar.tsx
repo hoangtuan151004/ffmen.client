@@ -92,7 +92,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen }) => {
             {isMenuOpen && <span className="text-sm">Sản phẩm</span>}
           </Link>
         </li>
-        {/* ... các menu khác */}
       </ul>
     </div>
   );
