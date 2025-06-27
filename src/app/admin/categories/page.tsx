@@ -2,13 +2,10 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-
 import AddOrEditCategoryPopup from "../components/categoryPopup";
 import CategoryTable from "../components/categoryTable";
-
 import { getAllCategories, deleteCategory } from "@/services/category.service";
 import { Category } from "@/types";
-
 const Categories: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -26,7 +23,7 @@ const Categories: React.FC = () => {
       parentCategory: "",
     },
   });
-
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   // Lấy token từ local/session
   useEffect(() => {
     const token =
@@ -45,8 +42,6 @@ const Categories: React.FC = () => {
       }
     })();
   }, []);
-
-  // Thêm hoặc sửa danh mục
   const handleSubmitCate = async (
     values: any,
     { setSubmitting, resetForm }: any,
@@ -55,13 +50,10 @@ const Categories: React.FC = () => {
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit
-        ? `http://localhost:5000/api/categories/${values._id}`
-        : "http://localhost:5000/api/categories";
-
-      // Chuẩn hóa dữ liệu: nếu parentCategory rỗng thì xoá hẳn field này
+        ? `${API_URL}/api/categories/${values._id}`
+        : `${API_URL}/api/categories`;
       const bodyData = { ...values };
       if (!bodyData.parentCategory) delete bodyData.parentCategory;
-
       const res = await fetch(url, {
         method,
         headers: {
@@ -70,14 +62,9 @@ const Categories: React.FC = () => {
         },
         body: JSON.stringify(bodyData),
       });
-
       const data = await res.json();
-
       if (!res.ok) throw new Error(data.message || "Lỗi xử lý danh mục");
-
       toast.success(isEdit ? "✅ Cập nhật thành công!" : "✅ Thêm thành công!");
-
-      // Cập nhật UI
       setCategories((prev) => {
         const newList = isEdit
           ? prev.map((c) => (c._id === data.data._id ? data.data : c))
@@ -85,7 +72,6 @@ const Categories: React.FC = () => {
 
         return newList.sort((a, b) => a.name.localeCompare(b.name));
       });
-
       resetForm();
       setPopupState((prev) => ({ ...prev, show: false }));
     } catch (error: any) {
@@ -95,8 +81,6 @@ const Categories: React.FC = () => {
       setSubmitting(false);
     }
   };
-
-  // Mở popup edit
   const handleEdit = (cate: Category) => {
     setPopupState({
       show: true,
@@ -110,8 +94,6 @@ const Categories: React.FC = () => {
       },
     });
   };
-
-  // Xoá danh mục
   const handleDelete = (id: string) => {
     toast((t) => (
       <div className="p-2">
@@ -149,7 +131,6 @@ const Categories: React.FC = () => {
       </div>
     ));
   };
-
   return (
     <main className="bg-gray-100">
       <div className="records bg-white rounded-xl p-4 shadow-md">
@@ -176,7 +157,6 @@ const Categories: React.FC = () => {
             <h1 className="text-xl text-black">Quản Lý Danh Mục</h1>
           </Link>
         </div>
-
         <AddOrEditCategoryPopup
           show={popupState.show}
           onClose={() => setPopupState((prev) => ({ ...prev, show: false }))}
@@ -185,7 +165,6 @@ const Categories: React.FC = () => {
           initialValues={popupState.initData}
           isEdit={popupState.isEdit}
         />
-
         <div className="table-responsive overflow-auto rounded-lg">
           <CategoryTable
             categories={categories}
@@ -197,5 +176,4 @@ const Categories: React.FC = () => {
     </main>
   );
 };
-
 export default Categories;

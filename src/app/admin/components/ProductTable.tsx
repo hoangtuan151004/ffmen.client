@@ -50,7 +50,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
   return (
     <div className="rounded-md border w-full overflow-x-auto">
       <Table className="w-full min-w-[900px] text-left table-fixed border-collapse border border-gray-200">
-        <TableHeader>
+        <TableHeader className="bg-gray-200">
           <TableRow>
             <TableHead className="text-center w-[40px]">STT</TableHead>
             <TableHead className="text-center">Hình ảnh</TableHead>
