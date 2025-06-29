@@ -55,7 +55,7 @@ export default function Login() {
       if (!userRes.ok) throw new Error("Không thể lấy thông tin người dùng");
       const fullUser = await userRes.json();
       sessionStorage.setItem("user", JSON.stringify(fullUser));
-
+      if (fullUser.isActive = false) throw new Error("Tài khoản của người dùng đã bị cấm")
       toast.success("Đăng nhập thành công");
       setIsLoading(true);
       reset();
@@ -108,8 +108,8 @@ export default function Login() {
         </form>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="underline">
-            Sign in
+          <Link href="/register" className="text-blue-500 font-bold">
+            Sign up
           </Link>
         </div>
       </div>

@@ -94,7 +94,7 @@ export default function Register() {
             />
 
             <TextInput
-              label='Phone Number'
+              label='Phone'
               register={register}
               name='phoneNumber'
               type='tel'
@@ -140,9 +140,9 @@ export default function Register() {
 
           </form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/login" className="underline">
-              Sign in
+            Have an account?{" "}
+            <Link href="/login" className="text-blue-500 font-bold">
+              Sign in now
             </Link>
           </div>
         </div>
