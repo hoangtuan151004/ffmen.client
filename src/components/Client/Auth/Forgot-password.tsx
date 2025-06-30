@@ -109,8 +109,9 @@ export default function ForgotPassword() {
       toast.success(result.message || 'OTP đã được gửi!')
       goToStep('otp')
       setCooldown(60)
-    } catch {
-      toast.error('Không gửi được OTP')
+    } catch(error) {
+      const errorMessage = error instanceof Error ? error.message : 'Đã xảy ra lỗi';
+      toast.error(` ${errorMessage}`);
     } finally {
       setLoading(false)
     }
@@ -141,8 +142,9 @@ export default function ForgotPassword() {
 
       toast.success('Xác minh OTP thành công!')
       goToStep('change-password')
-    } catch {
-      toast.error('Xác minh OTP thất bại')
+    } catch(error) {
+      const errorMessage = error instanceof Error ? error.message : 'Đã xảy ra lỗi';
+      toast.error(`Xác minh OTP thất bại: ${errorMessage}`);
     } finally {
       setLoading(false)
     }
