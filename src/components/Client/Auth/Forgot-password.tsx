@@ -12,6 +12,13 @@ import { Button } from '@/components/ui/button'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
 import { RotateCcw, RotateCcwIcon } from "lucide-react"
 
+import {
+  resendOtp as resendOtpService,
+  verifyOtp as verifyOtpService,
+  resetPassword as resetPasswordService
+} from '@/services/Auth/forgot-password.service'
+
+
 const steps = [
   { id: 'select', label: 'Chọn phương thức' },
   { id: 'input', label: 'Nhập thông tin' },
@@ -23,10 +30,10 @@ export default function ForgotPassword() {
 
   const router = useRouter()
   const searchParams = useSearchParams()
-  
+
   const [step, setStep] = useState<typeof steps[number]['id']>('select')
   const [otp, setOtp] = useState('')
-  
+
   const [method, setMethod] = useState<'email' | 'phone' | null>(null)
   const [cooldown, setCooldown] = useState(0)
   const [loading, setLoading] = useState(false)
@@ -96,22 +103,13 @@ export default function ForgotPassword() {
 
     try {
       setLoading(true)
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-      const res = await fetch(`${API_URL}/api/auth/resend-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-
-      const result = await res.json()
-      if (!res.ok) throw new Error(result.message)
-
+      const result = await resendOtpService(payload)
       toast.success(result.message || 'OTP đã được gửi!')
       goToStep('otp')
       setCooldown(60)
-    } catch(error) {
-      const errorMessage = error instanceof Error ? error.message : 'Đã xảy ra lỗi';
-      toast.error(` ${errorMessage}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : " Đã xảy ra lỗi"
+      toast.error(`${errorMessage}`)
     } finally {
       setLoading(false)
     }
@@ -130,21 +128,40 @@ export default function ForgotPassword() {
 
     try {
       setLoading(true)
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-      const res = await fetch(`${API_URL}/api/auth/verify-password`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-
-      const result = await res.json()
-      if (!res.ok) throw new Error(result.message)
-
+      await verifyOtpService(payload)
       toast.success('Xác minh OTP thành công!')
       goToStep('change-password')
-    } catch(error) {
-      const errorMessage = error instanceof Error ? error.message : 'Đã xảy ra lỗi';
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : " Đã xảy ra lỗi"
       toast.error(`Xác minh OTP thất bại: ${errorMessage}`);
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetPassword = async () => {
+    const values = getValues()
+    const password = values.password?.trim()
+
+    if (!password || password.length < 6) {
+      return toast.error('Mật khẩu cần ít nhất 6 ký tự')
+    }
+
+    const payload = {
+      password,
+      ...(method === 'email'
+        ? { email: values.email }
+        : { phoneNumber: values.phoneNumber })
+    }
+
+    try {
+      setLoading(true)
+      await resetPasswordService(payload)
+      toast.success('Mật khẩu đã được cập nhật!')
+      router.push('/login')
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : " Đã xảy ra lỗi"
+      toast.error(`${errorMessage}` || 'Đặt lại mật khẩu thất bại')
     } finally {
       setLoading(false)
     }
@@ -163,13 +180,13 @@ export default function ForgotPassword() {
           return (
             <div key={s.id} className="relative z-10 flex flex-col items-center text-center flex-1">
               <div
-                className={`w-7 h-7 rounded-full border flex items-center justify-center mb-1 transition-colors duration-300
+                className={`w-7 h-7 rounded-full border flex items-center justify-center dark:text-white mb-1 transition-colors duration-300
                   ${isActive
-                    ? 'bg-primary text-white border-primary'
+                    ? 'bg-primary text-white border-primary dark:bg-blue-700'
                     : isCompleted
                       ? 'bg-green-500 text-white border-green-500'
                       : 'bg-muted text-muted-foreground border-gray-300'
-                    }
+                  }
                 `}
               >
                 {i + 1}
@@ -219,9 +236,11 @@ export default function ForgotPassword() {
                 />
               )}
               <div className="flex gap-2">
-                <Button type="submit" className="flex-1" disabled={loading}>
-                  {loading ? 'Đang gửi...' : 'Gửi OTP'}
-                </Button>
+                <SubmitButton
+                  title="gửi OTP"
+                  loadingTitle="Đang gửi..."
+                  isLoading={loading}
+                  onClick={verifyOtp} />
                 <Button type="button" variant="ghost" className="flex-1" onClick={() => goToStep('select')}>
                   Quay lại
                 </Button>
@@ -260,13 +279,12 @@ export default function ForgotPassword() {
                 </Button>
               </div>
               <div className="flex gap-2 mt-2">
-                <Button
-                  className="flex-1"
-                  onClick={verifyOtp}
-                  disabled={otp.length !== 6 || loading}
-                >
-                  {loading ? 'Đang xác minh...' : 'Xác minh OTP'}
-                </Button>
+                <SubmitButton
+                  title="Xác minh OTP"
+                  // disabled={otp.length !== 6 || loading}
+                  loadingTitle="Đang xác minh..."
+                  isLoading={loading}
+                  onClick={verifyOtp} />
                 <Button
                   type="button"
                   variant="ghost"
@@ -298,6 +316,7 @@ export default function ForgotPassword() {
                 title="Save change password"
                 loadingTitle="Saving change you please wait..."
                 isLoading={loading}
+                onClick={handleResetPassword} // ✅ đã đúng
               />
             </div>
           )}

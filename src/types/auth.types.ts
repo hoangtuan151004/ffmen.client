@@ -1,6 +1,6 @@
 export type RegisterInputProps = {
   fullName: string;
-  phone: string;
+  phoneNumber: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -35,10 +35,11 @@ export interface JwtPayload {
   id: string;
   role: string;
   roles?: string[];
-  name: string;
+  fullName: string;
+  isActive: boolean;
   avatar?: string;
-  exp: number;
-  iat: number;
+  // exp: number;
+  // iat: number;
 }
 
 export interface AuthContextType {

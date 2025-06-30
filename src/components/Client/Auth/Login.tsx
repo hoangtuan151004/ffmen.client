@@ -1,15 +1,18 @@
 "use client";
 import React from "react";
-import TextInput from "../../FormInput/TextInput";
-import { useForm } from "react-hook-form";
-import SubmitButton from "../../FormInput/SubmitButton";
-import { LoginInputProps } from "../../../types";
+import Link from "next/link";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import Link from "next/link";
-import { UserRole } from "../../../types/auth.types";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+
+import SubmitButton from '@/components/FormInput/SubmitButton'
+import TextInput from '@/components/FormInput/TextInput'
+
+import { LoginInputProps } from "@/types";
+import { UserRole } from "@/types/auth.types";
+import { getUserById, loginUser } from "../../../services/Auth/login.service";
 
 export default function Login() {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -22,65 +25,43 @@ export default function Login() {
   } = useForm<LoginInputProps>();
 
   async function onSubmit(data: LoginInputProps) {
+    console.log("Login data:", data);
     try {
-      const API_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      setIsLoading(true);
 
-      const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const result = await loginUser(data);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage = "Login failed";
-        try {
-          const errorData = JSON.parse(errorText);
-          errorMessage = errorData.message || errorMessage;
-        } catch {
-          console.error("Error parsing login error response:", errorText);
-        }
-        throw new Error(errorMessage);
+      if (!result?.user?.id || !result.token) {
+        throw new Error("Thông tin đăng nhập không hợp lệ");
       }
-
-      const result = await response.json();
 
       Cookies.set("token", result.token, { expires: 7 });
 
-      const userRes = await fetch(
-        `${API_URL}/api/users/user/${result.user.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${result.token}`,
-          },
-        }
-      );
+      const fullUser = await getUserById(result.user.id, result.token);
 
-      if (!userRes.ok) throw new Error("Không thể lấy thông tin người dùng");
+      if (fullUser.isActive === false) {
+        toast.error("Tài khoản đã bị vô hiệu hóa");
+        return;
+      }
 
-      const userData = await userRes.json();
-      const fullUser = userData.user; // ✅ Fix chỗ này
+      if (!Array.isArray(fullUser.roles)) {
+        throw new Error("Thông tin quyền không hợp lệ");
+      }
 
       sessionStorage.setItem("user", JSON.stringify(fullUser));
-      if (fullUser.isActive = false) throw new Error("Tài khoản của người dùng đã bị cấm")
       toast.success("Đăng nhập thành công");
-      setIsLoading(true);
       reset();
 
-      if (
-        Array.isArray(fullUser.roles) &&
-        fullUser.roles.includes(UserRole.ADMIN)
-      ) {
+      if (fullUser.roles.includes(UserRole.ADMIN)) {
         router.push("/admin");
-      } else if (fullUser.roles.includes(UserRole.STAFF)) {
-        router.push("/staff");
       } else {
         router.push("/");
       }
+
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error(error instanceof Error ? error.message : "Đã xảy ra lỗi");
+      const errorMessage =
+        error instanceof Error ? error.message : "Đăng nhập thất bại";
+      toast.error(`${errorMessage}`);
     } finally {
       setIsLoading(false);
     }
