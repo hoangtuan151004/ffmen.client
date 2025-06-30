@@ -7,3 +7,14 @@ export interface Category {
   createdAt?: string;
   updatedAt?: string;
 }
+export interface CategoryListResponse {
+  data: Category[];
+  currentPage: number;
+  totalPages: number;
+  totalCategories: number;
+}
+export interface CreateOrUpdateCategoryResponse {
+  success: boolean;
+  message: string;
+  data: Category;
+}

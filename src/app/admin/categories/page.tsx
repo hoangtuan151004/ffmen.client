@@ -6,9 +6,14 @@ import AddOrEditCategoryPopup from "../../../components/Admin/categoryPopup";
 import CategoryTable from "../../../components/Admin/categoryTable";
 import { getAllCategories, deleteCategory } from "@/services/category.service";
 import { Category } from "@/types";
+import { createOrUpdateCategory } from "@/services/category.service";
+import { useAuth } from "@/context/auth-context";
+import ReactPaginate from "react-paginate";
 const Categories: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageCount, setPageCount] = useState(0);
+  const { token, user } = useAuth(); // 👈 lấy token và user từ context
   const [popupState, setPopupState] = useState<{
     show: boolean;
     isEdit: boolean;
@@ -23,53 +28,39 @@ const Categories: React.FC = () => {
       parentCategory: "",
     },
   });
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  // Lấy token từ local/session
-  useEffect(() => {
-    const token =
-      localStorage.getItem("token") || sessionStorage.getItem("token");
-    setAccessToken(token);
-  }, []);
+  const fetchCategories = async (page = 1) => {
+    try {
+      const res = await getAllCategories(page, 10);
+      setCategories(res.data);
+      setPageCount(res.totalPages);
+    } catch (err) {
+      console.error("Lỗi khi lấy danh mục", err);
+    }
+  };
 
-  // Lấy danh sách danh mục
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await getAllCategories();
-        setCategories(data);
-      } catch (err: any) {
-        console.error("Lỗi lấy danh mục:", err.message);
-      }
-    })();
-  }, []);
+    fetchCategories(currentPage + 1);
+  }, [currentPage]);
+
+  const handlePageClick = (e: { selected: number }) => {
+    setCurrentPage(e.selected);
+  };
   const handleSubmitCate = async (
     values: any,
     { setSubmitting, resetForm }: any,
     isEdit: boolean
   ) => {
     try {
-      const method = isEdit ? "PUT" : "POST";
-      const url = isEdit
-        ? `${API_URL}/api/categories/${values._id}`
-        : `${API_URL}/api/categories`;
-      const bodyData = { ...values };
-      if (!bodyData.parentCategory) delete bodyData.parentCategory;
-      const res = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          // Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(bodyData),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Lỗi xử lý danh mục");
+      const category = await createOrUpdateCategory(
+        values,
+        isEdit,
+        token ?? undefined
+      );
       toast.success(isEdit ? "✅ Cập nhật thành công!" : "✅ Thêm thành công!");
       setCategories((prev) => {
         const newList = isEdit
-          ? prev.map((c) => (c._id === data.data._id ? data.data : c))
-          : [...prev, data.data];
-
+          ? prev.map((c) => (c._id === category._id ? category : c))
+          : [...prev, category];
         return newList.sort((a, b) => a.name.localeCompare(b.name));
       });
       resetForm();
@@ -135,6 +126,9 @@ const Categories: React.FC = () => {
     <main className="bg-gray-100 space-y-2 p-2 w-full">
       <div className="records bg-white rounded-xl p-4 shadow-md">
         <div className="record-header flex justify-between items-center mb-4">
+          <Link href="">
+            <h1 className="text-xl text-black">Quản Lý Danh Mục</h1>
+          </Link>
           <button
             onClick={() =>
               setPopupState({
@@ -152,11 +146,8 @@ const Categories: React.FC = () => {
           >
             Thêm Danh Mục
           </button>
-
-          <Link href="">
-            <h1 className="text-xl text-black">Quản Lý Danh Mục</h1>
-          </Link>
         </div>
+
         <AddOrEditCategoryPopup
           show={popupState.show}
           onClose={() => setPopupState((prev) => ({ ...prev, show: false }))}
@@ -165,6 +156,7 @@ const Categories: React.FC = () => {
           initialValues={popupState.initData}
           isEdit={popupState.isEdit}
         />
+
         <div className="table-responsive overflow-auto rounded-lg">
           <CategoryTable
             categories={categories}
@@ -172,6 +164,23 @@ const Categories: React.FC = () => {
             handleEdit={handleEdit}
           />
         </div>
+
+        <ReactPaginate
+          previousLabel={"<"}
+          nextLabel={">"}
+          breakLabel={"..."}
+          pageCount={pageCount}
+          marginPagesDisplayed={1}
+          pageRangeDisplayed={3}
+          onPageChange={handlePageClick}
+          containerClassName="flex justify-end items-center mt-8 space-x-2 text-black"
+          pageClassName="px-2 py-2 text-black bg-white border rounded-lg text-[12px]"
+          previousLinkClassName="px-2 text-black py-2 bg-white text-black border rounded-lg text-[12px]"
+          nextLinkClassName="px-2 py-2 text-black bg-white border rounded-lg text-[12px]"
+          disabledClassName="opacity-50 cursor-not-allowed pointer-events-none text-black"
+          activeClassName="px-3 py-2 text-gray-400 bg-indigo-600 rounded-lg"
+          forcePage={currentPage}
+        />
       </div>
     </main>
   );

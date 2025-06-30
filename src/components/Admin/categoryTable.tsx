@@ -1,8 +1,6 @@
 // components/CategoryTable.tsx
 "use client";
 import React from "react";
-import Link from "next/link";
-import { Category } from "../../../types";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -13,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Category } from "../../types/category.types";
 
 interface CategoryTableProps {
   categories: Category[];

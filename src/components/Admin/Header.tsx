@@ -40,7 +40,11 @@ const Header: React.FC<HeaderProps> = ({ toggleMenu, isMenuOpen }) => {
     }
   };
 
-  const avatarUrl = user?.avatar || "https://i.pravatar.cc/150?img=3"; // fallback ảnh
+  const avatarUrl = user?.avatar?.trim()
+    ? user.avatar
+    : "https://i.pravatar.cc/150?img=3";
+  // fallback ảnh
+  console.log("user.avatar = ", user?.avatar);
   const avatarFallback = user?.name
     ? user.name
         .split(" ")

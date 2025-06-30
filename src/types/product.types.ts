@@ -31,7 +31,7 @@ export interface IProduct {
 
   categoryId?: string;
   category: Category;
-
+  categoryName?: string; // Tên danh mục, có thể không có nếu không cần hiển thị
   hot?: number;
   view?: number;
   shortDescription?: string;
@@ -54,7 +54,37 @@ export interface ProductListResponse {
   totalPages: number;
   totalProducts: number;
 }
-
+export type DeleteProductResponse = {
+  success: boolean;
+  message: string;
+  data: IProduct;
+};
 export interface EditProductProps {
   params: { id: string };
+}
+// types/product-form.types.ts
+export interface ProductFormData {
+  _id?: string;
+  name: string;
+  price: number;
+  discountPrice: number;
+  quantity: number;
+  shortDescription: string;
+  longDescription: string;
+  categoryId: string;
+  categoryName: string;
+  imgs: (string | File)[];
+  variants: {
+    _id?: string;
+    attributes: {
+      size: string;
+      color: string;
+    };
+    price: number;
+    quantity: number;
+    sku?: string;
+    img: string;
+    imgFile?: File | null;
+  }[];
+  deletedVariantIds?: string[];
 }

@@ -7,7 +7,5 @@ export default function AdminLayoutWrapper({
   children: React.ReactNode;
 }) {
   const token = cookies().get("token")?.value || null;
-
-  // 🚨 Không decode hay kiểm tra role ở đây nữa!
   return <AdminLayout token={token}>{children}</AdminLayout>;
 }

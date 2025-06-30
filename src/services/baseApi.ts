@@ -17,7 +17,6 @@ axiosInstance.interceptors.request.use(
       typeof window !== "undefined"
         ? localStorage.getItem("token") || sessionStorage.getItem("token")
         : null;
-
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   },
@@ -69,6 +68,16 @@ class BaseApi {
   ): Promise<AxiosResponse<T>> {
     try {
       const response = await axiosInstance.put<T>(url, data, config);
+      return response;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+  public async request<T>(
+    config: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
+    try {
+      const response = await axiosInstance.request<T>(config);
       return response;
     } catch (error) {
       throw this.handleError(error);

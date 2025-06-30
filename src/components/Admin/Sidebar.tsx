@@ -6,6 +6,7 @@ import { LayoutDashboard, User, Tag, ShoppingCart } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.jpg";
+import { docsConfig } from "@/config/docs";
 
 interface SidebarProps {
   isMenuOpen: boolean;
