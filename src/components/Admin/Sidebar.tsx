@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutDashboard, User, Tag, ShoppingCart } from "lucide-react";
+import {
+  LayoutDashboard,
+  User,
+  Tag,
+  ShoppingCart,
+  Package,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import logo from "../../assets/logo.jpg";
@@ -32,6 +38,11 @@ const menuItems = [
     label: "Sản phẩm",
     href: "/admin/proadmin",
     icon: ShoppingCart,
+  },
+  {
+    label: "Đơn hàng",
+    href: "/admin/orders",
+    icon: Package,
   },
 ];
 

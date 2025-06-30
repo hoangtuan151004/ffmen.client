@@ -73,7 +73,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                       {parent.description || "—"}
                     </TableCell>
                     <TableCell>
-                      <div className="flex justify-center items-center gap-2">
+                      <div className="flex justify-center items-center  ">
                         <Button
                           variant="ghost"
                           size="icon"
@@ -127,7 +127,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                           : child.description || "—"}
                       </TableCell>
                       <TableCell>
-                        <div className="flex justify-center items-center gap-2">
+                        <div className="flex justify-center items-center ">
                           <Button
                             variant="ghost"
                             size="icon"

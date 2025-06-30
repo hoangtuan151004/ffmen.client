@@ -99,7 +99,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                     : product.shortDescription}
                 </TableCell>
                 <TableCell className="text-center">
-                  <div className="flex items-center justify-center gap-1 sm:gap-2">
+                  <div className="flex items-center justify-center">
                     <Button
                       variant="ghost"
                       size="icon"

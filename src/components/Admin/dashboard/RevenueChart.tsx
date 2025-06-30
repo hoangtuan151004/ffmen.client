@@ -85,7 +85,6 @@ export default function RevenueChart() {
           <CardTitle className="text-xl font-semibold text-gray-800">
             Biểu đồ doanh thu
           </CardTitle>
-
           <div className="flex flex-wrap gap-2 items-center">
             {/* Chọn kiểu lọc */}
             <Select
@@ -102,7 +101,6 @@ export default function RevenueChart() {
                 <SelectItem value="range">Theo khoảng ngày</SelectItem>
               </SelectContent>
             </Select>
-
             {/* Lọc theo số tháng */}
             {filterType === "months" && (
               <Select
