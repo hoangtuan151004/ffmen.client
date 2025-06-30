@@ -3,11 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAllProducts, deleteProduct } from "@/services/product.service";
 import { Category } from "@/types/index";
-import ProductPopup from "../../../../components/DashBoard/ProductPopupForm/PopupPro";
 import toast from "react-hot-toast";
-import ProductTable from "../../../../components/DashBoard/ProductTable";
+import ProductTable from "../../../components/Admin/ProductTable";
 import ReactPaginate from "react-paginate";
 import { getAllCategories } from "@/services/category.service";
+import ProductPopup from "../../../components/Admin/ProductPopupForm/PopupPro";
 
 const ProductAdmin: React.FC = () => {
   const defaultValues = {
@@ -93,9 +93,12 @@ const ProductAdmin: React.FC = () => {
   };
 
   const handleSubmitpro = async (
-    values,
-    { setSubmitting, resetForm },
-    isEditMode
+    values: any,
+    {
+      setSubmitting,
+      resetForm,
+    }: { setSubmitting: (v: boolean) => void; resetForm: () => void },
+    isEditMode: boolean
   ) => {
     const isEdit = isEditMode && values._id;
     const formData = new FormData();
@@ -127,7 +130,7 @@ const ProductAdmin: React.FC = () => {
     }
 
     // 3. Biến thể & ảnh biến thể
-    const cleanVariants = [];
+    const cleanVariants: any = [];
     const variantImgIndexes: number[] = [];
 
     values.variants.forEach((v: any, i: number) => {
@@ -164,7 +167,8 @@ const ProductAdmin: React.FC = () => {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/products${isEdit ? `/${values._id}` : ""
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products${
+          isEdit ? `/${values._id}` : ""
         }`,
         {
           method: isEdit ? "PUT" : "POST",
@@ -270,7 +274,9 @@ const ProductAdmin: React.FC = () => {
                 try {
                   const result = await deleteProduct(id);
                   if (result) {
-                    setProducts((prev) => prev.filter((p) => p._id !== id));
+                    setProducts((prev: any) =>
+                      prev.filter((p: any) => p._id !== id)
+                    );
                     toast.success("🗑️ Xoá sản phẩm thành công!", {
                       style: {
                         border: "1px solid #4ade80",
@@ -312,7 +318,7 @@ const ProductAdmin: React.FC = () => {
   if (!isClient) return null;
 
   return (
-    <main className="bg-gray-100">
+    <main className="bg-gray-100 space-y-2 p-2 w-full">
       <div className="records bg-white rounded-xl p-4 shadow-md">
         <div className="record-header flex justify-between items-center mb-4">
           <button
