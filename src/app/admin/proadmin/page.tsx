@@ -318,7 +318,7 @@ const ProductAdmin: React.FC = () => {
   if (!isClient) return null;
 
   return (
-    <main className="bg-gray-100">
+    <main className="bg-gray-100 space-y-2 p-2 w-full">
       <div className="records bg-white rounded-xl p-4 shadow-md">
         <div className="record-header flex justify-between items-center mb-4">
           <button

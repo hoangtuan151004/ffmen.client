@@ -18,6 +18,8 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import axios from "axios";
+import { useAuth } from "@/context/auth-context"; // 👈 context chứa token
 
 type RevenueItem = {
   month: string;
@@ -27,17 +29,23 @@ type RevenueItem = {
 const RevenueChart = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [revenueData, setRevenueData] = useState<RevenueItem[]>([]);
+  const { token, user } = useAuth(); // 👈 lấy token và user từ context
+  console.log(user?.role);
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     const fetchRevenue = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/orders/revenue`, {
-          credentials: "include",
-        });
-        if (!res.ok) throw new Error("Lỗi khi lấy dữ liệu doanh thu");
-        const data: RevenueItem[] = await res.json();
+        if (!token) return;
 
-        const formattedData = data.map((item) => {
+        const response = await axios.get(`${API_URL}/api/orders/revenue`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true, // nếu dùng cookie + token chung
+        });
+
+        const formattedData = response.data.map((item: RevenueItem) => {
           const monthNum = parseInt(item.month.split("-")[1], 10);
           return {
             month: `Th${monthNum}`,
@@ -47,13 +55,13 @@ const RevenueChart = () => {
 
         setRevenueData(formattedData);
       } catch (error) {
-        console.error(error);
+        console.error("Lỗi khi lấy dữ liệu doanh thu:", error);
         setRevenueData([]);
       }
     };
 
     fetchRevenue();
-  }, []);
+  }, [token]);
 
   return (
     <Card>

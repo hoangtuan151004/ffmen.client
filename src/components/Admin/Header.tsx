@@ -1,6 +1,13 @@
 "use client";
-import React from "react";
+
 import { Bell, LogOut, Mail, Menu, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import React from "react";
+import { useAuth } from "@/context/auth-context";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 interface HeaderProps {
   toggleMenu: () => void;
@@ -8,53 +15,94 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ toggleMenu, isMenuOpen }) => {
+  const { user } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`,
+        {
+          method: "POST",
+          credentials: "include", // gửi cookie
+        }
+      );
+
+      if (res.ok) {
+        toast.success("Đăng xuất thành công 👋");
+        router.push("/login");
+      } else {
+        toast.error("Đăng xuất thất bại 😓");
+      }
+    } catch (err) {
+      toast.error("Lỗi khi đăng xuất ❌");
+      console.error("Lỗi khi logout:", err);
+    }
+  };
+
+  const avatarUrl = user?.avatar || "https://i.pravatar.cc/150?img=3"; // fallback ảnh
+  const avatarFallback = user?.name
+    ? user.name
+        .split(" ")
+        .map((word) => word[0])
+        .join("")
+        .toUpperCase()
+    : "??";
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 h-[60px] flex justify-between items-center px-4 z-[50] transition-all duration-300 ${
-        isMenuOpen ? "pl-[165px]" : "pl-[50px]"
+      className={`fixed top-0 left-0 right-0 h-[50px] flex items-center px-4 bg-white border-b shadow-sm z-[39] transition-all duration-300 ${
+        isMenuOpen ? "pl-[176px]" : "pl-[50px]"
       }`}
     >
-      <div
-        className={`flex items-center p-2 transition-all duration-300 ${
-          isMenuOpen ? "justify-start px-2" : "justify-center"
-        }`}
-      >
-        <button
-          onClick={toggleMenu}
-          className="cursor-pointer text-3xl  hover:text-teal-400 transition-colors "
-          aria-label="Toggle menu"
-        >
-          <div
-            className={`flex items-center ${
-              isMenuOpen
-                ? "justify-start space-x-2 px-2"
-                : "justify-center space-x-2 px-2 "
-            }`}
-          >
-            <Menu className="w-9 h-9 text-gray-600 rounded-full bg-slate-100 shadow-lg p-2" />
-            {isMenuOpen && <span className="text-xl"></span>}
-          </div>
-        </button>
-      </div>
+      <Button variant="ghost" size="icon" onClick={toggleMenu}>
+        <Menu className="h-6 w-6" />
+      </Button>
 
-      <div className="header-menu flex items-center space-x-4 text-black ml-auto">
-        <Search className="w-5 h-5" />
-        <div className="notify-icon relative">
-          <Mail className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 bg-teal-500 text-white text-xs rounded-full px-1">
+      <div className="flex-1" />
+
+      <div className="flex items-center space-x-4">
+        <Button variant="ghost" size="icon">
+          <Search className="w-5 h-5" />
+        </Button>
+
+        <div className="relative">
+          <Button variant="ghost" size="icon">
+            <Mail className="w-5 h-5" />
+          </Button>
+          <Badge
+            className="absolute -top-1 -right-1 px-[5px] py-[1px] text-[10px]"
+            variant="destructive"
+          >
             4
-          </span>
+          </Badge>
         </div>
-        <div className="notify-icon relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute -top-1 -right-1 bg-teal-500 text-white text-xs rounded-full px-1">
+
+        <div className="relative">
+          <Button variant="ghost" size="icon">
+            <Bell className="w-5 h-5" />
+          </Button>
+          <Badge
+            className="absolute -top-1 -right-1 px-[5px] py-[1px] text-[10px]"
+            variant="destructive"
+          >
             3
-          </span>
+          </Badge>
         </div>
-        <div className="user flex items-center space-x-1 cursor-pointer">
-          <LogOut className="w-5 h-5 text-red-500" />
+
+        <Button
+          variant="ghost"
+          className="text-red-500 gap-1"
+          onClick={handleLogout}
+        >
+          <LogOut className="w-4 h-4" />
           <span className="text-sm">Logout</span>
-        </div>
+        </Button>
+
+        <Avatar>
+          <AvatarImage src={avatarUrl} alt="user" />
+          <AvatarFallback>{avatarFallback}</AvatarFallback>
+        </Avatar>
       </div>
     </header>
   );

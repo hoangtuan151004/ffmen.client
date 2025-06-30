@@ -1,98 +1,80 @@
-import React from "react";
+"use client";
+
 import Link from "next/link";
-import {
-  LayoutDashboard,
-  User,
-  Tag,
-  ShoppingCart,
-  Mail,
-  ClipboardList,
-  Menu,
-} from "lucide-react";
-import logo from "../../../assets/logo.jpg";
+import Image from "next/image";
+import { LayoutDashboard, User, Tag, ShoppingCart } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import logo from "../../assets/logo.jpg";
+
 interface SidebarProps {
   isMenuOpen: boolean;
 }
 
+const menuItems = [
+  {
+    label: "Dashboard",
+    href: "/admin",
+    icon: LayoutDashboard,
+  },
+  {
+    label: "User",
+    href: "/admin/user",
+    icon: User,
+  },
+  {
+    label: "Danh mục",
+    href: "/admin/categories",
+    icon: Tag,
+  },
+  {
+    label: "Sản phẩm",
+    href: "/admin/proadmin",
+    icon: ShoppingCart,
+  },
+];
+
 const Sidebar: React.FC<SidebarProps> = ({ isMenuOpen }) => {
   return (
     <div
-      className="fixed top-0 left-0 h-full bg-white  border-shadow shadow-md text-gray-400 transition-all duration-300 z-[40] flex flex-col"
-      style={{
-        width: isMenuOpen ? 165 : 50,
-      }}
+      className={cn(
+        "fixed top-0 left-0 h-full bg-white border-r shadow-md transition-all z-40 flex flex-col",
+        isMenuOpen ? "w-44" : "w-[50px]"
+      )}
     >
+      {/* Logo */}
       <div
-        className={`flex items-center p-2 border-b border-gray-400 transition-all duration-300 ${
-          isMenuOpen ? "justify-start px-2" : "justify-center"
-        }`}
+        className={cn(
+          "flex items-center border-b px-1 py-1",
+          isMenuOpen ? "justify-start" : "justify-center"
+        )}
       >
-        <Link
-          href="/"
-          className={`flex items-center text-white transition-all duration-300 ${
-            isMenuOpen ? "justify-start space-x-2 p-4" : "justify-center "
-          }`}
-        >
-          <img src={logo.src} className="w-10 " alt="Logo" />
+        <Link href="/" className="flex items-center space-x-2">
+          <Image src={logo} alt="Logo" width={50} height={50} />
           {isMenuOpen && (
-            <span className="text-2xl text-center text-gray-600">FFMen</span>
+            <span className="text-lg font-semibold text-gray-700">FFMen</span>
           )}
         </Link>
       </div>
 
-      {/* Menu items */}
-      <ul className="mt-4 space-y-4 text-center flex-1">
-        <li className="hover:bg-blue-200 p-2">
-          <Link
-            href="/admin"
-            className={`flex items-center text-gray-600 transition-all duration-300 ${
-              isMenuOpen ? "justify-start space-x-2 px-2" : "justify-center"
-            }`}
-          >
-            <LayoutDashboard className="w-6 h-6" />
-            {isMenuOpen && <span className="text-sm">Dashboard</span>}
-          </Link>
-        </li>
-
-        <li
-          className={`hover:bg-blue-200 p-2 ${
-            isMenuOpen ? "text-left px-2" : "text-center"
-          }`}
-        >
-          <Link
-            href="/admin/user"
-            className={`flex items-center text-gray-600 ${
-              isMenuOpen ? "justify-start space-x-2 px-2" : "justify-center"
-            }`}
-          >
-            <User className="w-6 h-6" />
-            {isMenuOpen && <span className="text-sm">User</span>}
-          </Link>
-        </li>
-
-        <li className="hover:bg-blue-200 p-2">
-          <Link
-            href="/admin/categories"
-            className={`flex items-center text-gray-600 ${
-              isMenuOpen ? "justify-start space-x-2 px-2" : "justify-center"
-            }`}
-          >
-            <Tag className="w-6 h-6" />
-            {isMenuOpen && <span className="text-sm">Danh mục</span>}
-          </Link>
-        </li>
-        <li className="hover:bg-blue-200 p-2">
-          <Link
-            href="/admin/proadmin"
-            className={`flex items-center text-gray-600 ${
-              isMenuOpen ? "justify-start space-x-2 px-2" : "justify-center"
-            }`}
-          >
-            <ShoppingCart className="w-6 h-6" />
-            {isMenuOpen && <span className="text-sm">Sản phẩm</span>}
-          </Link>
-        </li>
+      <ul className="mt-4 space-y-2 flex-1 px-1">
+        {menuItems.map((item) => (
+          <li key={item.label}>
+            <Link
+              href={item.href}
+              className={cn(
+                "flex items-center rounded-md hover:bg-blue-100 text-gray-700 text-sm font-medium px-2 py-2 transition-colors",
+                isMenuOpen ? "justify-start space-x-2" : "justify-center"
+              )}
+            >
+              <item.icon className="w-5 h-5" />
+              {isMenuOpen && <span>{item.label}</span>}
+            </Link>
+          </li>
+        ))}
       </ul>
+
+      <Separator className="mt-auto" />
     </div>
   );
 };
