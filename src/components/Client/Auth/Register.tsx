@@ -9,6 +9,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Alert } from "../../ui/alert"
+import { registerUser } from"@/services/Auth/register.service"
 
 
 
@@ -23,46 +24,27 @@ export default function Register() {
     watch,
     formState: { errors }
   } = useForm<RegisterInputProps>()
+
   const password = watch("password");
+  
   async function onSubmit(data: RegisterInputProps) {
+    const { confirmPassword, ...payload } = data; 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      const response = await fetch(`${API_URL}/api/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage = "Đăng ký thất bại";
-
-        try {
-          const errorData = JSON.parse(errorText);
-          errorMessage = errorData.message || errorMessage;
-        } catch {
-          console.error("Error parsing register error response:", errorText);
-        }
-
-        throw new Error(errorMessage);
-      }
-
-      toast.success("Đăng ký thành công");
-      setIsLoading(true);
-      reset();
-      router.push("/login");
-
+      setIsLoading(true)
+      await registerUser(payload) 
+      toast.success("Đăng ký thành công")
+      reset()
+      router.push("/login")
     } catch (error) {
-      console.error("Register error:", error);
+      console.error("Register error:", error)
       toast.error(
         error instanceof Error ? error.message : "Đã xảy ra lỗi khi đăng ký"
-      );
+      )
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
+
 
 
   return (
@@ -94,7 +76,7 @@ export default function Register() {
             />
 
             <TextInput
-              label='Phone Number'
+              label='Phone'
               register={register}
               name='phoneNumber'
               type='tel'
@@ -140,9 +122,9 @@ export default function Register() {
 
           </form>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/login" className="underline">
-              Sign in
+            Have an account?{" "}
+            <Link href="/login" className="text-blue-500 font-bold">
+              Sign in now
             </Link>
           </div>
         </div>

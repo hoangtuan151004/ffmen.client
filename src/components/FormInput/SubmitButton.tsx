@@ -9,6 +9,7 @@ type SubmitButtonProps = {
     isLoading?: boolean,
     loadingTitle?: string
     className?: string
+    onClick?: () => void
 }
 
 export default function SubmitButton({
@@ -17,6 +18,7 @@ export default function SubmitButton({
     isLoading = false,
     loadingTitle = 'Loading...',
     className = "col-span-full",
+    onClick
 }: SubmitButtonProps) {
 
     return (
@@ -30,6 +32,7 @@ export default function SubmitButton({
                 )
                 : (
                     <Button
+                        onClick={onClick}
                         type={buttonType} className='w-full'>
                         {title}
                     </Button>
