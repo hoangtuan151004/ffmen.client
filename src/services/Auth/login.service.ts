@@ -1,10 +1,5 @@
-import { JwtPayload } from "../../types"
+import { JwtPayload, LoginInputProps } from "../../types"
 import { baseApi } from '../baseApi'
-
-interface LoginInput {
-  email: string
-  password: string
-}
 
 interface LoginResponse {
   token: string
@@ -16,8 +11,8 @@ interface GetUserResponse {
 }
 
 // Login
-export const loginUser = async (data: LoginInput): Promise<LoginResponse> => {
-  const res = await baseApi.post<LoginResponse, LoginInput>('/auth/login', data)
+export const loginUser = async (data: LoginInputProps): Promise<LoginResponse> => {
+  const res = await baseApi.post<LoginResponse, LoginInputProps>('/auth/login', data)
   return res.data
 }
 

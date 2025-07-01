@@ -1,10 +1,15 @@
+// src/components/site-header.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+// import Cookies from "js-cookie";
+import toast from "react-hot-toast";
+
 import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
-import { CommandMenu } from "./command-menu";
 import { ModeSwitcher } from "./mode-switcher";
+
 import {
   HeartIcon,
   LogOutIcon,
@@ -14,6 +19,7 @@ import {
   User2Icon,
   UserIcon,
 } from "lucide-react";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,12 +30,10 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { UserProps } from "../types";
-import Cookies from "js-cookie"
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { logoutApi } from "../services/Auth/auth.service";
 
 export default function SiteHeader() {
-  const router = useRouter()
+  const router = useRouter();
   const [user, setUser] = useState<UserProps>();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -45,43 +49,26 @@ export default function SiteHeader() {
 
   const handleLogout = async () => {
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-      // 1. Gọi API logout
-      const res = await fetch(`${API_URL}/api/auth/logout`, {
-        method: "POST",
-        credentials: "include", // nếu server dùng cookie HTTP-only
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Cookies.get("token") || ""}`, // nếu cần token
-        },
-      });
-
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Đăng xuất thất bại: ${text}`);
-      }
-      toast.success("Tài khoản đã Đăng xuất")
-      sessionStorage.removeItem("user");
-      Cookies.remove("token");
+      await logoutApi();
+      toast.success("Tài khoản đã Đăng xuất");
+      // sessionStorage.removeItem("user");
+      // Cookies.remove("token");
       setIsLoggedIn(false);
       router.push("/login");
-
     } catch (err) {
       console.error("Logout error:", err);
       toast.error("Có lỗi khi đăng xuất");
     }
   };
+
   return (
     <header className="border-grid sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container-wrapper">
+      <div className="container-wrapper">
         <div className="container flex h-14 items-center gap-2 md:gap-4">
           <MainNav />
           <MobileNav />
           <div className="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
-            <div className="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
-              <CommandMenu />
-            </div>
+            <div className="hidden w-full flex-1 md:flex md:w-auto md:flex-none"></div>
             <nav className="flex items-center gap-0.5">
               <Link
                 href="/cart"

@@ -19,6 +19,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, token }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(true);
   const router = useRouter();
   const isFirstRun = useRef(true);
+  
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
