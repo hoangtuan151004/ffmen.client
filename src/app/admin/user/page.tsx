@@ -46,7 +46,7 @@ const User: React.FC = () => {
   };
 
   return (
-    <main className="bg-gray-100 min-h-screen p-6">
+    <main className="min-h-screen p-6">
       <div className="records bg-white rounded-xl p-4 shadow-md">
         <div className="record-header flex justify-between items-center mb-4">
           <Link href="">

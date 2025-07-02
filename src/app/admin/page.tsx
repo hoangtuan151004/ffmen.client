@@ -3,6 +3,7 @@
 import HotProductTable from "../../components/Admin/dashboard/HotProductTable";
 import RevenueChart from "../../components/Admin/dashboard/RevenueChart";
 import StatCard from "../../components/Admin/dashboard/StatCard";
+import { SectionCards } from "../../components/section-cards";
 
 const DashboardPage = () => {
   const statistics = {
@@ -19,7 +20,7 @@ const DashboardPage = () => {
     }).format(value);
 
   return (
-    <div className="space-y-6 p-6 w-full">
+    <div className="space-y-6 p-6 ">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Sản phẩm"

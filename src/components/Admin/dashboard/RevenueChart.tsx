@@ -81,12 +81,11 @@ export default function RevenueChart() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between ">
           <CardTitle className="text-xl font-semibold text-gray-800">
             Biểu đồ doanh thu
           </CardTitle>
           <div className="flex flex-wrap gap-2 items-center">
-            {/* Chọn kiểu lọc */}
             <Select
               value={filterType}
               onValueChange={(val) => setFilterType(val as any)}
@@ -101,7 +100,6 @@ export default function RevenueChart() {
                 <SelectItem value="range">Theo khoảng ngày</SelectItem>
               </SelectContent>
             </Select>
-            {/* Lọc theo số tháng */}
             {filterType === "months" && (
               <Select
                 value={months.toString()}
@@ -117,8 +115,6 @@ export default function RevenueChart() {
                 </SelectContent>
               </Select>
             )}
-
-            {/* Lọc theo khoảng ngày */}
             {filterType === "range" && (
               <Popover>
                 <PopoverTrigger asChild>
@@ -148,7 +144,6 @@ export default function RevenueChart() {
           </div>
         </div>
       </CardHeader>
-
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={revenueData}>
