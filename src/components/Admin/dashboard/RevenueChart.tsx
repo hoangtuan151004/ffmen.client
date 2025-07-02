@@ -1,4 +1,6 @@
+// src/components/Admin/dashboard/RevenueChart.tsx
 "use client";
+
 import {
   BarChart,
   Bar,
@@ -18,34 +20,35 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import axios from "axios";
-import { useAuth } from "@/context/auth-context"; // 👈 context chứa token
 
 type RevenueItem = {
   month: string;
   revenue: number;
 };
 
-const RevenueChart = () => {
+type Props = {
+  token: string | undefined;
+};
+
+const RevenueChart = ({ token }: Props) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [revenueData, setRevenueData] = useState<RevenueItem[]>([]);
-  const { token, user } = useAuth(); // 👈 lấy token và user từ context
-  console.log(user?.role);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchRevenue = async () => {
       try {
         if (!token) return;
 
-        const response = await axios.get(`${API_URL}/api/orders/revenue`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/orders/revenue`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          withCredentials: true, // nếu dùng cookie + token chung
+          cache: "no-store",
         });
 
-        const formattedData = response.data.map((item: RevenueItem) => {
+        const data = await res.json();
+
+        const formattedData = data.map((item: RevenueItem) => {
           const monthNum = parseInt(item.month.split("-")[1], 10);
           return {
             month: `Th${monthNum}`,

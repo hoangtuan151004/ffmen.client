@@ -1,15 +1,11 @@
 // src/components/site-header.tsx
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-// import Cookies from "js-cookie";
-import toast from "react-hot-toast";
-
 import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
 import { ModeSwitcher } from "./mode-switcher";
-
 import {
   HeartIcon,
   LogOutIcon,
@@ -19,7 +15,6 @@ import {
   User2Icon,
   UserIcon,
 } from "lucide-react";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,36 +24,16 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { UserProps } from "../types";
-import { logoutApi } from "../services/Auth/auth.service";
+import { useAuth } from "@/context/auth-context";
 
 export default function SiteHeader() {
   const router = useRouter();
-  const [user, setUser] = useState<UserProps>();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUser = sessionStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-        setIsLoggedIn(true);
-      }
-    }
-  }, []);
+  const { user, logout } = useAuth();
+  const isLoggedIn = !!user;
 
   const handleLogout = async () => {
-    try {
-      await logoutApi();
-      toast.success("Tài khoản đã Đăng xuất");
-      // sessionStorage.removeItem("user");
-      // Cookies.remove("token");
-      setIsLoggedIn(false);
-      router.push("/login");
-    } catch (err) {
-      console.error("Logout error:", err);
-      toast.error("Có lỗi khi đăng xuất");
-    }
+    await logout();
+    router.push("/login");
   };
 
   return (

@@ -27,8 +27,6 @@ export type UserProps = {
   isActive: boolean;
   isActiveEmail: boolean;
   isActivePhone: boolean;
-  createdAt?: string;
-  updatedAt?: string;
 };
 
 export interface JwtPayload {
@@ -43,6 +41,11 @@ export interface JwtPayload {
 }
 
 export interface AuthContextType {
-  token: string | null;
   user: JwtPayload | null;
+}
+
+export interface AuthClientType {
+  user: JwtPayload | null;
+  login: (user: JwtPayload) => void;
+  logout: () => void;
 }

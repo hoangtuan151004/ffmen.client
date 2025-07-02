@@ -12,11 +12,14 @@ import TextInput from '@/components/FormInput/TextInput'
 
 import { LoginInputProps } from "@/types";
 import { UserRole } from "@/types/auth.types";
-import { getUserById, loginUser } from "../../../services/Auth/login.service";
+import { getUserById, loginUser } from "@/services/Auth/auth.service";
+import { useAuth } from "@/context/auth-context";
 
 export default function Login() {
   const [isLoading, setIsLoading] = React.useState(false);
   const router = useRouter();
+  const { login } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -25,21 +28,21 @@ export default function Login() {
   } = useForm<LoginInputProps>();
 
   async function onSubmit(data: LoginInputProps) {
-    console.log("Login data:", data);
     try {
       setIsLoading(true);
 
       const result = await loginUser(data);
-
       if (!result?.user?.id || !result.token) {
         throw new Error("Thông tin đăng nhập không hợp lệ");
       }
 
+      // Lưu token vào cookie (tự động gửi trong request)
       Cookies.set("token", result.token, { expires: 7 });
 
+      // Lấy đầy đủ thông tin user
       const fullUser = await getUserById(result.user.id, result.token);
 
-      if (fullUser.isActive === false) {
+      if (!fullUser || fullUser.isActive === false) {
         toast.error("Tài khoản đã bị vô hiệu hóa");
         return;
       }
@@ -48,24 +51,27 @@ export default function Login() {
         throw new Error("Thông tin quyền không hợp lệ");
       }
 
-      sessionStorage.setItem("user", JSON.stringify(fullUser));
+      // Cập nhật user vào context + sessionStorage
+      login(fullUser);
+
       toast.success("Đăng nhập thành công");
       reset();
 
+      // Điều hướng theo vai trò
       if (fullUser.roles.includes(UserRole.ADMIN)) {
         router.push("/admin");
       } else {
         router.push("/");
       }
-
     } catch (error) {
-      const errorMessage =
+      const message =
         error instanceof Error ? error.message : "Đăng nhập thất bại";
-      toast.error(`${errorMessage}`);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
   }
+
 
   return (
     <div className="grid grid-cols-2 gap-4 items-center justify-center h-screen">
