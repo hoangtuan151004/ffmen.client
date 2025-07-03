@@ -3,7 +3,7 @@
 import HotProductTable from "../../components/Admin/dashboard/HotProductTable";
 import RevenueChart from "../../components/Admin/dashboard/RevenueChart";
 import StatCard from "../../components/Admin/dashboard/StatCard";
-import { SectionCards } from "../../components/section-cards";
+
 
 const DashboardPage = () => {
   const statistics = {

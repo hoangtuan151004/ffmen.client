@@ -2,16 +2,15 @@
 
 import {
   Card,
+  CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
-  CardContent,
-  CardFooter,
-  CardDescription,
-  CardActions,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { IconTrendingUp } from "@tabler/icons-react";
+import { TrendingUpIcon } from "lucide-react";
 
 interface StatCardProps {
   title: string;
@@ -21,22 +20,20 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, href }: StatCardProps) => {
   const content = (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer">
+    <Card className="relative hover:shadow-md transition-shadow cursor-pointer">
       <CardHeader>
         <CardDescription>{title}</CardDescription>
-        <CardTitle className="text-2xl font-bold text-gray-900">
+        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
           {value}
         </CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        <CardActions>
-          <Badge variant="outline" className="flex items-center gap-1 text-sm">
-            <IconTrendingUp className="w-4 h-4" />
+        <div className="absolute right-4 top-4">
+          <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
+            <TrendingUpIcon className="size-3" />
             +12.5%
           </Badge>
-        </CardActions>
-      </CardContent>
+        </div>
+      </CardHeader>
+
 
       <CardFooter className="flex-col items-start gap-1.5 text-sm">
         <div className="line-clamp-1 flex gap-2 font-medium">
