@@ -24,40 +24,41 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, token }) => {
   const router = useRouter();
   const isFirstRun = useRef(true);
 
-  useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-      return;
-    }
-    if (!token) {
-      toast.error("Bạn cần đăng nhập tài khoản admin để truy cập trang admin");
-      router.replace("/login");
-      return;
-    }
+  // useEffect(() => {
+  //   if (isFirstRun.current) {
+  //     isFirstRun.current = false;
+  //     return;
+  //   }
+  //   if (!token) {
+  //     toast.error("Bạn cần đăng nhập tài khoản admin để truy cập trang admin");
+  //     router.replace("/login");
+  //     return;
+  //   }
 
-    try {
-      const decoded = jwtDecode<JwtPayload>(token);
-      console.log("✅ Decoded token:", decoded);
+  //   try {
+  //     const decoded = jwtDecode<JwtPayload>(token);
+  //     console.log("✅ Decoded token:", decoded);
 
-      const isAdmin =
-        decoded.role === "admin" || decoded.roles?.includes("admin");
+  //     const isAdmin =
+  //       decoded.role === "admin" || decoded.roles?.includes("admin");
 
-      if (!isAdmin) {
-        toast.error("Bạn không có quyền truy cập vào trang admin");
-        router.replace("/");
-        return;
-      }
-      setUser(decoded);
-    } catch (err) {
-      toast.error("Token không hợp lệ");
-      router.replace("/login");
-    }
-  }, [token]);
+  //     if (!isAdmin) {
+  //       toast.error("Bạn không có quyền truy cập vào trang admin");
+  //       router.replace("/");
+  //       return;
+  //     }
+  //     setUser(decoded);
+  //   } catch (err) {
+  //     toast.error("Token không hợp lệ");
+  //     router.replace("/login");
+  //   }
+  // }, [token]);
 
-  if (!user) return null;
+  // if (!user) return null;
 
   return (
-    <AuthProvider token={token} user={user}>
+    // <AuthProvider token={token} user={user}>
+    //   </AuthProvider>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -73,7 +74,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, token }) => {
           </main>
         </SidebarInset>
       </SidebarProvider>
-    </AuthProvider>
 
   );
 };
