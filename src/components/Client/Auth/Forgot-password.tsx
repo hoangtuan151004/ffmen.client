@@ -48,7 +48,7 @@ export default function ForgotPassword() {
 
 const goToStep = useCallback(
   (targetStep: typeof step) => {
-    if (targetStep === step) return // không cần update nếu cùng bước
+    if (targetStep === step) return
     setStep(targetStep)
 
     const url = new URL(window.location.href)
@@ -75,10 +75,6 @@ useEffect(() => {
     setStep('select') // fallback nếu không khớp
   }
 }, [searchParams])
-
-
-
-
 
   useEffect(() => {
     let timer: NodeJS.Timeout

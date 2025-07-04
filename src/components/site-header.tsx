@@ -1,6 +1,6 @@
 // src/components/site-header.tsx
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MainNav } from "./main-nav";
@@ -10,6 +10,7 @@ import {
   HeartIcon,
   LogOutIcon,
   PackageIcon,
+  Search,
   SettingsIcon,
   ShoppingBasketIcon,
   User2Icon,
@@ -25,10 +26,17 @@ import {
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useAuth } from "@/context/auth-context";
+import { motion, AnimatePresence } from "framer-motion";
+// import { CommandMenu } from "./command-menu";
 
 export default function SiteHeader() {
   const router = useRouter();
   const { user, logout } = useAuth();
+  const [showInput, setShowInput] = useState(false);
+
+  const handleToggle = () => {
+    setShowInput((prev) => !prev);
+  };
   const isLoggedIn = !!user;
 
   const handleLogout = async () => {
@@ -43,7 +51,41 @@ export default function SiteHeader() {
           <MainNav />
           <MobileNav />
           <div className="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
-            <div className="hidden w-full flex-1 md:flex md:w-auto md:flex-none"></div>
+            <div className="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
+              {/*  
+              <CommandMenu/>
+              */}
+              <div className="relative">
+                <div
+                  className={`flex items-center rounded-full transition-all duration-300 overflow-hidden
+        ${showInput ? "border border-gray-400 pl-2 pr-3 py-1" : ""}`}
+                >
+                  {/* Nút search */}
+                  <button
+                    onClick={handleToggle}
+                    className="p-2 hover:bg-gray-100 rounded-full"
+                    title="Tìm kiếm"
+                  >
+                    <Search size={20} />
+                  </button>
+
+                  {/* Input */}
+                  <AnimatePresence>
+                    {showInput && (
+                      <motion.input
+                        type="text"
+                        placeholder="Tìm kiếm..."
+                        autoFocus
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: 160, opacity: 1 }}
+                        exit={{ width: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="ml-2 bg-transparent outline-none"
+                      />
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>          </div>
             <nav className="flex items-center gap-0.5">
               <Link
                 href="/cart"

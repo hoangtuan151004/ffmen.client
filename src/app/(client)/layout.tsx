@@ -8,7 +8,9 @@ export default function Layout({
   return (
     <div>
       <SiteHeader />
-      {children}
+      <main>
+        {children}
+      </main>
       <SiteFooter />
     </div>
   );

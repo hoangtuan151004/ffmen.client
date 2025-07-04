@@ -32,7 +32,7 @@ export interface IProduct {
   categoryId?: string;
   category: Category;
 
-  hot?: number;
+  hot?: boolean;
   view?: number;
   shortDescription?: string;
   longDescription?: string;
