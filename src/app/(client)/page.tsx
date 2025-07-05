@@ -167,6 +167,38 @@ export const Product = [
       name: "Short",
       description: "Category for shorts"
     }
+  },
+  {
+    _id: "11",
+    name: "Linen Shorts",
+    price: 80.0,
+    discountPrice: 70.0,
+    imgs: [
+      { url: "/image/linen1.png" },
+      { url: "/image/linen2.png" }
+    ],
+    hot: true,
+    category: {
+      _id: "cat2",
+      name: "Short",
+      description: "Category for shorts"
+    }
+  },
+  {
+    _id: "12",
+    name: "Linen Shorts",
+    price: 80.0,
+    discountPrice: 70.0,
+    imgs: [
+      { url: "/image/linen1.png" },
+      { url: "/image/linen2.png" }
+    ],
+    hot: true,
+    category: {
+      _id: "cat2",
+      name: "Short",
+      description: "Category for shorts"
+    }
   }
 ]
 export const Categories = [
@@ -205,14 +237,26 @@ export default function Home() {
     <div className="min-h-screen">
       <HeroSection />
       <div className="container flex flex-col gap-2">
-
         {/* ListProduct */}
         <ListProduct
           Categories={Categories}
           Product={Product}
         />
         {/*  */}
-
+        <Banner />
+        {/* ListProduct */}
+        <ListProduct
+          Categories={Categories}
+          Product={Product}
+        />
+        {/*  */}
+        <Banner />
+        {/* ListProduct */}
+        <ListProduct
+          Categories={Categories}
+          Product={Product}
+        />
+        {/*  */}
         <Banner />
       </div>
     </div>

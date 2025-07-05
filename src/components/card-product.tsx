@@ -11,18 +11,18 @@ export default function CardProduct({ imgs, name, price, discountPrice, _id, cat
   return (
     <Card
       key={_id}
-      className="w-full max-w-xs shadow-lg hover:shadow-xl transition-shadow rounded-2xl overflow-hidden">
+      className="w-full transition-shadow rounded-2xl overflow-hidden">
       <CardHeader className="p-0">
         <Image
           src={imgs[0]?.url}
           alt={name}
-          height={150}
-          width={150}
+          height={100}
+          width={100}
           className="w-full h-fit object-cover"
         />
       </CardHeader>
 
-      <CardContent className="p-4">
+      <CardContent className="py-0 px-4">
         <h1 className="text-base font-semibold text-gray-800 mb-2 truncate">
           {name} - {category.name}
         </h1>
