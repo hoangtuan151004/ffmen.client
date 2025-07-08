@@ -15,6 +15,7 @@ export default function OrderPage() {
   const { token } = useAuth();
   const [page, setPage] = useState(0); // 👈 ReactPaginate dùng page index (bắt đầu từ 0)
   const [totalPages, setTotalPages] = useState(0);
+
   useEffect(() => {
     const fetchOrders = async () => {
       if (!token) return;
@@ -47,7 +48,14 @@ export default function OrderPage() {
           </Link>
         </div>
 
-        <OrderTable orders={orders} />
+        <OrderTable
+          orders={orders}
+          onUpdateOrders={(updatedOrder) => {
+            setOrders((prev) =>
+              prev.map((o) => (o._id === updatedOrder._id ? updatedOrder : o))
+            );
+          }}
+        />
 
         <ReactPaginate
           previousLabel={"<"}

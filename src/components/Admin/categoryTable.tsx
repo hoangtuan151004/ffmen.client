@@ -1,4 +1,3 @@
-// components/CategoryTable.tsx
 "use client";
 import React from "react";
 import { Button } from "@/components/ui/button";
@@ -90,13 +89,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                         >
                           <Trash2 size={18} />
                         </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="text-green-500 hover:text-green-700"
-                        >
-                          <Eye size={18} />
-                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -143,13 +135,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                             className="text-red-500 hover:text-red-700"
                           >
                             <Trash2 size={18} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-green-500 hover:text-green-700"
-                          >
-                            <Eye size={18} />
                           </Button>
                         </div>
                       </TableCell>

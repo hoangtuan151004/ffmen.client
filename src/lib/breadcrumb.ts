@@ -3,7 +3,7 @@ export const generateBreadcrumb = (pathname: string) => {
   const segments = pathWithoutQuery.split("/").filter(Boolean);
 
   const labelMap: Record<string, string> = {
-    admin: "Trang admin",
+    admin: "Dashboard",
     products: "Sản phẩm",
     categories: "Danh mục",
     users: "Người dùng",

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
@@ -68,13 +67,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, token }) => {
               <AppBreadcrumb />
             </div>
           </header>
-          <main className="w-full flex flex-1 flex-col">
-            {children}
-          </main>
+          <main className="w-full flex flex-1 flex-col">{children}</main>
         </SidebarInset>
       </SidebarProvider>
     </AuthProvider>
-
   );
 };
 

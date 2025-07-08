@@ -7,8 +7,8 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
-import SubmitButton from '@/components/FormInput/SubmitButton'
-import TextInput from '@/components/FormInput/TextInput'
+import SubmitButton from "@/components/FormInput/SubmitButton";
+import TextInput from "@/components/FormInput/TextInput";
 
 import { LoginInputProps } from "@/types";
 import { UserRole } from "@/types/auth.types";
@@ -57,7 +57,6 @@ export default function Login() {
       } else {
         router.push("/");
       }
-
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Đăng nhập thất bại";
