@@ -257,7 +257,6 @@ export default function Home() {
           Product={Product}
         />
         {/*  */}
-        <Banner />
       </div>
     </div>
   );

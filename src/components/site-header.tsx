@@ -112,20 +112,20 @@ export default function SiteHeader() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Avatar className="w-8 h-8">
-                      <AvatarImage src={user?.avatar || ""} />
+                      <AvatarImage src={user?.user?.avatar || ""} />
                       <AvatarFallback>
-                        {user?.fullName?.charAt(0) || "U"}
+                        {user?.user?.fullName?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="w-52">
                     <DropdownMenuLabel className="text-sm">
-                      Xin chào, {user?.fullName || "Người dùng"}
+                      Xin chào, {user?.user?.fullName || "Người dùng"}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
 
                     <DropdownMenuItem asChild>
-                      <Link href="/profile" className="flex items-center gap-2">
+                      <Link href={`profile/${user?.user?.id ?? ""}`} className="flex items-center gap-2">
                         <UserIcon size={20} />
                         Hồ sơ
                       </Link>
@@ -178,6 +178,6 @@ export default function SiteHeader() {
           </div>
         </div>
       </div>
-    </header>
+    </header >
   );
 }

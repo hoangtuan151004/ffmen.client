@@ -30,22 +30,18 @@ export type UserProps = {
 };
 
 export interface JwtPayload {
-  id: string;
-  role: string;
   roles?: string[];
-  fullName: string;
   isActive: boolean;
-  avatar?: string;
-  // exp: number;
-  // iat: number;
+  user: UserProps;
 }
 
 export interface AuthContextType {
-  user: JwtPayload | null;
+  user: UserProps | null;
 }
 
 export interface AuthClientType {
   user: JwtPayload | null;
-  login: (user: JwtPayload) => void;
+  login: (userData: JwtPayload) => void;
   logout: () => void;
+  updateUser: (updatedFields: Partial<JwtPayload>) => void;
 }

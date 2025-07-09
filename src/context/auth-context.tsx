@@ -1,19 +1,23 @@
-// src/context/auth-context.tsx
 "use client";
+
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { AuthClientType, JwtPayload,  } from "@/types/auth.types";
+import { AuthClientType, JwtPayload } from "@/types/auth.types";
 import { logoutApi } from "@/services/Auth/auth.service";
 import toast from "react-hot-toast";
 
-const AuthContext= createContext<AuthClientType>({
+/**
+ * Context mặc định, thêm updateUser
+ */
+const AuthContext = createContext<AuthClientType>({
   user: null,
   login: () => {},
   logout: () => {},
+  updateUser: () => {},
 });
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<JwtPayload | null>(null);
-  
+
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
@@ -28,7 +32,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
 
   const logout = async () => {
     try {
-      await logoutApi(); // sẽ xóa cookie phía server (nếu cần)
+      await logoutApi();
       sessionStorage.removeItem("user");
       setUser(null);
       toast.success("Đăng xuất thành công");
@@ -38,8 +42,20 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     }
   };
 
+  /**
+   * ✅ Hàm update thông tin user (chỉ update các field cần thiết)
+   */
+  const updateUser = (updatedFields: Partial<JwtPayload>) => {
+    if (!user) return;
+
+    const updatedUser = { ...user, ...updatedFields };
+    sessionStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    toast.success("Cập nhật thông tin thành công");
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
