@@ -14,6 +14,7 @@ import { getAllCategories } from "@/services/category.service";
 import ProductPopup from "../../../components/Admin/ProductPopupForm/PopupPro";
 import { useAuth } from "@/context/auth-context";
 import Link from "next/link";
+import { cookies } from "next/headers";
 const ProductAdmin: React.FC = () => {
   const defaultValues: ProductFormData = {
     name: "",
@@ -32,10 +33,11 @@ const ProductAdmin: React.FC = () => {
     isEdit: false,
     initData: defaultValues,
   });
+  const accessToken = cookies().get("token")?.value
   const [categories, setCategories] = useState<Category[]>([]);
   const [isClient, setIsClient] = useState(false);
-  const { token, user } = useAuth(); // 👈 lấy token và user từ context
-  console.log(user?.role);
+  const { user } = useAuth(); // 👈 lấy token và user từ context
+  console.log(user?.roles);
   const [products, setProducts] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -151,8 +153,7 @@ const ProductAdmin: React.FC = () => {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/products${
-          isEdit ? `/${values._id}` : ""
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products${isEdit ? `/${values._id}` : ""
         }`,
         {
           method: isEdit ? "PUT" : "POST",
@@ -184,7 +185,7 @@ const ProductAdmin: React.FC = () => {
 
   const handleEditProduct = async (productId: string) => {
     try {
-      const product = await getProductById(productId, token ?? undefined);
+      const product = await getProductById(productId, accessToken ?? undefined);
 
       const initData = {
         name: product.name || "",
@@ -242,7 +243,7 @@ const ProductAdmin: React.FC = () => {
               onClick={async () => {
                 toast.dismiss(t.id);
                 try {
-                  const result = await deleteProduct(id, token ?? undefined);
+                  const result = await deleteProduct(id, accessToken ?? undefined);
                   if (result) {
                     setProducts((prev: any) =>
                       prev.filter((p: any) => p._id !== id)

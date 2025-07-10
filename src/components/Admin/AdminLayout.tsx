@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { JwtPayload } from "@/types/auth.types";
-import { AuthProvider } from "@/context/auth-context";
 import toast from "react-hot-toast";
 import { AppSidebar } from "../app-sidebar";
 import { Separator } from "@/components/ui/separator";
@@ -13,50 +12,49 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppBreadcrumb } from "../AppBreadcrumb";
+import { AuthContextProvider } from "../../context/auth-context";
+import { cookies } from "next/headers";
 interface AdminLayoutProps {
   children: React.ReactNode;
-  token: string | null;
 }
-const AdminLayout: React.FC<AdminLayoutProps> = ({ children, token }) => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   const [user, setUser] = useState<JwtPayload | null>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(true);
   const router = useRouter();
   const isFirstRun = useRef(true);
-
+  const token = cookies().get("token")?.value
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       return;
     }
     if (!token) {
-      toast.error("Bạn cần đăng nhập tài khoản admin để truy cập trang admin");
+      toast.error("You need to log in as an admin to access the admin page");
       router.replace("/login");
       return;
     }
-
     try {
       const decoded = jwtDecode<JwtPayload>(token);
       console.log("✅ Decoded token:", decoded);
 
-      const isAdmin =
-        decoded.role === "admin" || decoded.roles?.includes("admin");
+      const isAdmin = decoded.roles?.includes("admin");
 
       if (!isAdmin) {
-        toast.error("Bạn không có quyền truy cập vào trang admin");
+        toast.error("You do not have permission to access the admin page");
         router.replace("/");
         return;
       }
       setUser(decoded);
-    } catch (err) {
       toast.error("Token không hợp lệ");
+    } catch (err) {
+      toast.error("Invalid token");
       router.replace("/login");
     }
-  }, [token]);
-
+  },[])
   if (!user) return null;
 
+
   return (
-    <AuthProvider token={token} user={user}>
+    <AuthContextProvider>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -70,8 +68,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, token }) => {
           <main className="w-full flex flex-1 flex-col">{children}</main>
         </SidebarInset>
       </SidebarProvider>
-    </AuthProvider>
+    </AuthContextProvider>
   );
-};
-
+}
 export default AdminLayout;

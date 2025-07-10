@@ -1,4 +1,3 @@
-// src/components/Admin/dashboard/RevenueChart.tsx
 "use client";
 import { useState, useEffect } from "react";
 import {
@@ -28,6 +27,7 @@ import {
 import type { DateRange } from "react-day-picker";
 import { useAuth } from "@/context/auth-context";
 import axios from "axios";
+import { cookies } from "next/headers";
 
 type RevenueItem = { month: string; revenue: number };
 
@@ -39,8 +39,7 @@ export default function RevenueChart() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   const [revenueData, setRevenueData] = useState<RevenueItem[]>([]);
-  const { token, user } = useAuth(); // 👈 lấy token và user từ context
-  console.log(user?.role);
+  const { user } = useAuth(); // 👈 lấy token và user từ context
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,7 +51,7 @@ export default function RevenueChart() {
           params.from = dateRange.from.toISOString();
           params.to = dateRange.to.toISOString();
         }
-
+        const token = cookies().get("token")?.value
         const res = await axios.get(`${API_URL}/api/orders/revenue`, {
           headers: {
             Authorization: `Bearer ${token}`,
