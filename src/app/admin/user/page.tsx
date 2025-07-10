@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllUsers } from "@/services/user.service";
-import { useAuth } from "../../../context/auth-context";
-import UserTable from "../../../components/Admin/UserTable";
+import UserTable from "@/components/Admin/UserTable";
 import { UserProps } from "@/types/auth.types";
 import ReactPaginate from "react-paginate";
-const User: React.FC = () => {
+import { getCookies } from "@/lib/getToken";
+export default function User() {
   const [users, setUsers] = useState<UserProps[]>([]);
-  const { token } = useAuth();
+
   const [allUsers, setAllUsers] = useState<UserProps[]>([]);
   const [pageCount, setPageCount] = useState<number>(0);
 
@@ -18,8 +18,8 @@ const User: React.FC = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
+      const token = await getCookies();
       if (!token) return;
-
       try {
         const result = await getAllUsers(token);
         setAllUsers(result);
@@ -35,7 +35,7 @@ const User: React.FC = () => {
     };
 
     fetchUsers();
-  }, [token]);
+  }, []);
   const handlePageClick = (event: { selected: number }) => {
     const selectedPage = event.selected;
     setCurrentPage(selectedPage);
@@ -77,4 +77,3 @@ const User: React.FC = () => {
   );
 };
 
-export default User;

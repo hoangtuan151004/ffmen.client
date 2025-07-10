@@ -1,20 +1,22 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import toast from "react-hot-toast";
+import ReactPaginate from "react-paginate";
+
+import ProductPopup from "@/components/Admin/ProductPopupForm/PopupPro";
+import ProductTable from "@/components/Admin/ProductTable";
+import { useAuth } from "@/context/auth-context";
+import { getCookies } from "@/lib/getToken";
+
 import {
   getAllProducts,
   deleteProduct,
-  createOrUpdateProduct,
   getProductById,
 } from "@/services/product.service";
-import { Category, ProductFormData } from "@/types/index";
-import toast from "react-hot-toast";
-import ProductTable from "../../../components/Admin/ProductTable";
-import ReactPaginate from "react-paginate";
 import { getAllCategories } from "@/services/category.service";
-import ProductPopup from "../../../components/Admin/ProductPopupForm/PopupPro";
-import { useAuth } from "@/context/auth-context";
-import Link from "next/link";
-import { cookies } from "next/headers";
+import { Category, ProductFormData } from "@/types/index";
+
 const ProductAdmin: React.FC = () => {
   const defaultValues: ProductFormData = {
     name: "",
@@ -33,11 +35,9 @@ const ProductAdmin: React.FC = () => {
     isEdit: false,
     initData: defaultValues,
   });
-  const accessToken = cookies().get("token")?.value
   const [categories, setCategories] = useState<Category[]>([]);
   const [isClient, setIsClient] = useState(false);
   const { user } = useAuth(); // 👈 lấy token và user từ context
-  console.log(user?.roles);
   const [products, setProducts] = useState<any>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageCount, setPageCount] = useState(0);
@@ -152,13 +152,14 @@ const ProductAdmin: React.FC = () => {
     }
 
     try {
+      const token = await getCookies();
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/products${isEdit ? `/${values._id}` : ""
         }`,
         {
           method: isEdit ? "PUT" : "POST",
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${token}`,
           },
           body: formData,
         }
@@ -185,7 +186,8 @@ const ProductAdmin: React.FC = () => {
 
   const handleEditProduct = async (productId: string) => {
     try {
-      const product = await getProductById(productId, accessToken ?? undefined);
+      const token = await getCookies()
+      const product = await getProductById(productId, token ?? undefined);
 
       const initData = {
         name: product.name || "",
@@ -243,7 +245,8 @@ const ProductAdmin: React.FC = () => {
               onClick={async () => {
                 toast.dismiss(t.id);
                 try {
-                  const result = await deleteProduct(id, accessToken ?? undefined);
+                  const token = await getCookies()
+                  const result = await deleteProduct(id, token ?? undefined);
                   if (result) {
                     setProducts((prev: any) =>
                       prev.filter((p: any) => p._id !== id)
