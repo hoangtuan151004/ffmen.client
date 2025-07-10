@@ -10,9 +10,9 @@ import toast from "react-hot-toast";
  */
 const AuthContext = createContext<AuthClientType>({
   user: null,
-  login: () => {},
-  logout: () => {},
-  updateUser: () => {},
+  login: () => { },
+  logout: () => { },
+  updateUser: () => { },
 });
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
@@ -34,6 +34,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     try {
       await logoutApi();
       sessionStorage.removeItem("user");
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
       setUser(null);
       toast.success("Đăng xuất thành công");
     } catch (err) {
