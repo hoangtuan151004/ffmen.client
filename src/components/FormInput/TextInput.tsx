@@ -12,6 +12,7 @@ type TextInputProps = {
     placeholder: string,
     page?: string,
     className?: string,
+    disabled?: boolean,
     isRequired?: boolean,
     register: any,
     errors: any,
@@ -26,6 +27,7 @@ export default function TextInput({
     type,
     placeholder,
     page,
+    disabled,
     className = "col-span-full",
     isRequired = true,
     registerOptions,
@@ -62,6 +64,7 @@ export default function TextInput({
                     name={name}
                     type={isPasswordField && !showPassword ? "password" : "text"} // 👈 toggle type
                     autoComplete="off"
+                    disabled={disabled}
                     placeholder={placeholder}
                 />
 

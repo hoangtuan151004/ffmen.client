@@ -1,14 +1,16 @@
+// src/components/site-header.tsx
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MainNav } from "./main-nav";
 import { MobileNav } from "./mobile-nav";
-import { CommandMenu } from "./command-menu";
 import { ModeSwitcher } from "./mode-switcher";
 import {
   HeartIcon,
   LogOutIcon,
   PackageIcon,
+  Search,
   SettingsIcon,
   ShoppingBasketIcon,
   User2Icon,
@@ -23,65 +25,67 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { UserProps } from "../types";
-import Cookies from "js-cookie"
-import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import { useAuth } from "@/context/auth-context";
+import { motion, AnimatePresence } from "framer-motion";
+// import { CommandMenu } from "./command-menu";
 
 export default function SiteHeader() {
-  const router = useRouter()
-  const [user, setUser] = useState<UserProps>();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const [showInput, setShowInput] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUser = sessionStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-        setIsLoggedIn(true);
-      }
-    }
-  }, []);
+  const handleToggle = () => {
+    setShowInput((prev) => !prev);
+  };
+  const isLoggedIn = !!user;
 
   const handleLogout = async () => {
-    try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
-      // 1. Gọi API logout
-      const res = await fetch(`${API_URL}/api/auth/logout`, {
-        method: "POST",
-        credentials: "include", // nếu server dùng cookie HTTP-only
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${Cookies.get("token") || ""}`, // nếu cần token
-        },
-      });
-
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(`Đăng xuất thất bại: ${text}`);
-      }
-      toast.success("Tài khoản đã Đăng xuất")
-      sessionStorage.removeItem("user");
-      Cookies.remove("token");
-      setIsLoggedIn(false);
-      router.push("/login");
-
-    } catch (err) {
-      console.error("Logout error:", err);
-      toast.error("Có lỗi khi đăng xuất");
-    }
+    await logout();
+    router.push("/login");
   };
+
   return (
     <header className="border-grid sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container-wrapper">
+      <div className="container-wrapper">
         <div className="container flex h-14 items-center gap-2 md:gap-4">
           <MainNav />
           <MobileNav />
           <div className="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
             <div className="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
-              <CommandMenu />
-            </div>
+              {/*  
+              <CommandMenu/>
+              */}
+              <div className="relative">
+                <div
+                  className={`flex items-center rounded-full transition-all duration-300 overflow-hidden
+        ${showInput ? "border border-gray-400 pl-2 pr-3 py-1" : ""}`}
+                >
+                  {/* Nút search */}
+                  <button
+                    onClick={handleToggle}
+                    className="p-2 hover:bg-gray-100 rounded-full"
+                    title="Tìm kiếm"
+                  >
+                    <Search size={20} />
+                  </button>
+
+                  {/* Input */}
+                  <AnimatePresence>
+                    {showInput && (
+                      <motion.input
+                        type="text"
+                        placeholder="Tìm kiếm..."
+                        autoFocus
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: 160, opacity: 1 }}
+                        exit={{ width: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="ml-2 bg-transparent outline-none"
+                      />
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>          </div>
             <nav className="flex items-center gap-0.5">
               <Link
                 href="/cart"
@@ -108,20 +112,20 @@ export default function SiteHeader() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Avatar className="w-8 h-8">
-                      <AvatarImage src={user?.avatar || ""} />
+                      <AvatarImage src={user?.user?.avatar || ""} />
                       <AvatarFallback>
-                        {user?.fullName?.charAt(0) || "U"}
+                        {user?.user?.fullName?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="w-52">
                     <DropdownMenuLabel className="text-sm">
-                      Xin chào, {user?.fullName || "Người dùng"}
+                      Xin chào, {user?.user?.fullName || "Người dùng"}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
 
                     <DropdownMenuItem asChild>
-                      <Link href="/profile" className="flex items-center gap-2">
+                      <Link href={`profile/${user?.user?.id ?? ""}`} className="flex items-center gap-2">
                         <UserIcon size={20} />
                         Hồ sơ
                       </Link>
@@ -174,6 +178,6 @@ export default function SiteHeader() {
           </div>
         </div>
       </div>
-    </header>
+    </header >
   );
 }

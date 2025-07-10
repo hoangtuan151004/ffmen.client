@@ -28,7 +28,7 @@ export default function Register() {
   const password = watch("password");
   
   async function onSubmit(data: RegisterInputProps) {
-    const { confirmPassword, ...payload } = data; 
+    const payload = { ...data };
     try {
       setIsLoading(true)
       await registerUser(payload) 

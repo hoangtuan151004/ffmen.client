@@ -84,12 +84,89 @@ const ProductAdmin: React.FC = () => {
     }: { setSubmitting: (v: boolean) => void; resetForm: () => void },
     isEditMode: boolean
   ) => {
-    try {
-      const created = await createOrUpdateProduct(
-        values,
-        isEditMode,
-        token ?? undefined
+    const isEdit = isEditMode && values._id;
+    const formData = new FormData();
+
+    // 1. Thông tin cơ bản
+    formData.append("name", values.name);
+    formData.append("price", values.price.toString());
+    formData.append("discountPrice", values.discountPrice?.toString() || "0");
+    formData.append("quantity", values.quantity.toString());
+    formData.append(
+      "category",
+      JSON.stringify({ categoryId: values.categoryId })
+    );
+    formData.append("categoryName", values.categoryName || "");
+    formData.append("shortDescription", values.shortDescription);
+    formData.append("longDescription", values.longDescription);
+
+    // 2. Xử lý ảnh sản phẩm
+    const urlImages: string[] = [];
+    for (let img of values.imgs) {
+      if (img instanceof File) {
+        formData.append("files", img);
+      } else if (typeof img === "string") {
+        urlImages.push(img);
+      }
+    }
+    if (urlImages.length) {
+      formData.append("imgUrls", JSON.stringify(urlImages));
+    }
+
+    // 3. Biến thể & ảnh biến thể
+    const cleanVariants: any = [];
+    const variantImgIndexes: number[] = [];
+
+    values.variants.forEach((v: any, i: number) => {
+      const isFile = v.imgFile instanceof File;
+
+      if (isFile) {
+        formData.append("variantFiles", v.imgFile);
+        variantImgIndexes.push(i);
+      }
+
+      cleanVariants.push({
+        _id: v._id,
+        price: v.price,
+        quantity: v.quantity,
+        sku: v.sku,
+        attributes: {
+          size: v.attributes?.size || "",
+          color: v.attributes?.color || "",
+        },
+        img: isFile ? "" : v.img,
+      });
+    });
+
+    formData.append("variants", JSON.stringify(cleanVariants));
+    formData.append("variantImgIndexes", JSON.stringify(variantImgIndexes));
+
+    // 4. Biến thể bị xoá
+    if (values.deletedVariantIds?.length) {
+      formData.append(
+        "deletedVariantIds",
+        JSON.stringify(values.deletedVariantIds)
       );
+    }
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products${
+          isEdit ? `/${values._id}` : ""
+        }`,
+        {
+          method: isEdit ? "PUT" : "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!res.ok)
+        throw new Error(
+          isEdit ? "Cập nhật thất bại" : "Thêm sản phẩm thất bại"
+        );
 
       toast.success(
         isEditMode ? "Cập nhật thành công!" : "Thêm sản phẩm thành công!"

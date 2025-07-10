@@ -22,7 +22,7 @@ import {
 const steps = [
   { id: 'select', label: 'Chọn phương thức' },
   { id: 'input', label: 'Nhập thông tin' },
-  { id: 'otp', label: 'Nhập mã OTP' },
+  { id: 'verify-otp', label: 'Nhập mã OTP' },
   { id: 'change-password', label: 'Reset Mật khẩu' }
 ] as const
 
@@ -46,31 +46,35 @@ export default function ForgotPassword() {
     getValues
   } = useForm()
 
-  const goToStep = useCallback(
-    (targetStep: typeof step) => {
-      setStep(targetStep)
-      const url = new URL(window.location.href)
-      url.searchParams.set('step', targetStep)
-      if (method) url.searchParams.set('method', method)
-      router.push(url.toString())
-    },
-    [method, router] // các dependency của callback
-  )
+const goToStep = useCallback(
+  (targetStep: typeof step) => {
+    if (targetStep === step) return
+    setStep(targetStep)
 
-  useEffect(() => {
-    const urlStep = searchParams.get('step') as typeof step | null
-    const methodParam = searchParams.get('method') as 'email' | 'phone' | null
-
-    if (urlStep === 'otp' && methodParam) {
-      setMethod(methodParam)
-      setStep('input')
-      goToStep('input')
-    } else if (urlStep && steps.some(s => s.id === urlStep)) {
-      setStep(urlStep)
+    const url = new URL(window.location.href)
+    url.searchParams.set('step', targetStep)
+    if (method) {
+      url.searchParams.set('method', method)
+    } else {
+      url.searchParams.delete('method')
     }
-  }, [searchParams, goToStep])
+    router.push(url.toString())
+  },
+  [method, router, step]
+)
 
+useEffect(() => {
+  const urlStep = searchParams.get('step') as typeof step | null
+  const methodParam = searchParams.get('method') as 'email' | 'phone' | null
 
+  if (methodParam) setMethod(methodParam)
+
+  if (urlStep && steps.some(s => s.id === urlStep)) {
+    setStep(urlStep)
+  } else {
+    setStep('select') // fallback nếu không khớp
+  }
+}, [searchParams])
 
   useEffect(() => {
     let timer: NodeJS.Timeout
@@ -105,8 +109,8 @@ export default function ForgotPassword() {
       setLoading(true)
       const result = await resendOtpService(payload)
       toast.success(result.message || 'OTP đã được gửi!')
-      goToStep('otp')
-      setCooldown(60)
+      goToStep('verify-otp')
+      // setCooldown(60)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : " Đã xảy ra lỗi"
       toast.error(`${errorMessage}`)
@@ -240,7 +244,9 @@ export default function ForgotPassword() {
                   title="gửi OTP"
                   loadingTitle="Đang gửi..."
                   isLoading={loading}
-                  onClick={verifyOtp} />
+                  buttonType='submit'
+                // onClick={onSubmit} 
+                />
                 <Button type="button" variant="ghost" className="flex-1" onClick={() => goToStep('select')}>
                   Quay lại
                 </Button>
@@ -248,8 +254,8 @@ export default function ForgotPassword() {
             </form>
           )}
 
-          {step === 'otp' && (
-            <div className="space-y-2 pt-4">
+          {step === 'verify-otp' && (
+            <form onSubmit={handleSubmit(verifyOtp)} className="space-y-2 pt-4">
               <label className="text-sm font-medium">Nhập mã OTP</label>
               <div className="flex gap-2 items-center">
                 <InputOTP maxLength={6} value={otp} onChange={setOtp}>
@@ -281,10 +287,11 @@ export default function ForgotPassword() {
               <div className="flex gap-2 mt-2">
                 <SubmitButton
                   title="Xác minh OTP"
-                  // disabled={otp.length !== 6 || loading}
                   loadingTitle="Đang xác minh..."
                   isLoading={loading}
-                  onClick={verifyOtp} />
+                  buttonType='submit'
+                // onClick={verifyOtp} 
+                />
                 <Button
                   type="button"
                   variant="ghost"
@@ -299,11 +306,11 @@ export default function ForgotPassword() {
                   Quay lại
                 </Button>
               </div>
-            </div>
+            </form>
           )}
 
           {step === 'change-password' && (
-            <div className="space-y-2 pt-4">
+            <form onSubmit={handleSubmit(handleResetPassword)} className="space-y-2 pt-4">
               <TextInput
                 label="Reset mật khẩu"
                 placeholder="**********"
@@ -316,9 +323,9 @@ export default function ForgotPassword() {
                 title="Save change password"
                 loadingTitle="Saving change you please wait..."
                 isLoading={loading}
-                onClick={handleResetPassword} // ✅ đã đúng
+              // onClick={handleResetPassword} // ✅ đã đúng
               />
-            </div>
+            </form>
           )}
         </CardContent>
       </Card>
