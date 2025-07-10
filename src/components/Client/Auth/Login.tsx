@@ -32,7 +32,8 @@ export default function Login() {
       setIsLoading(true);
 
       const result = await loginUser(data);
-      if (!result?.user?.id || !result.token) {
+      const userId = (result?.user as { id?: string })?.id;
+      if (!userId || !result.token) {
         throw new Error("Thông tin đăng nhập không hợp lệ");
       }
 
@@ -40,7 +41,7 @@ export default function Login() {
       Cookies.set("token", result.token, { expires: 7 });
 
       // Lấy đầy đủ thông tin user
-      const fullUser = await getUserById(result.user.id, result.token);
+      const fullUser = await getUserById(userId, result.token);
 
       if (!fullUser || fullUser.isActive === false) {
         toast.error("Tài khoản đã bị vô hiệu hóa");

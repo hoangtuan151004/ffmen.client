@@ -27,7 +27,7 @@ import {
 import type { DateRange } from "react-day-picker";
 import { useAuth } from "@/context/auth-context";
 import axios from "axios";
-import { cookies } from "next/headers";
+import { getCookies } from "@/lib/getToken";
 
 type RevenueItem = { month: string; revenue: number };
 
@@ -51,7 +51,7 @@ export default function RevenueChart() {
           params.from = dateRange.from.toISOString();
           params.to = dateRange.to.toISOString();
         }
-        const token = cookies().get("token")?.value
+        const token = await getCookies();
         const res = await axios.get(`${API_URL}/api/orders/revenue`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -124,9 +124,9 @@ export default function RevenueChart() {
                   >
                     {dateRange?.from && dateRange?.to
                       ? `${format(dateRange.from, "dd/MM/yyyy")} - ${format(
-                          dateRange.to,
-                          "dd/MM/yyyy"
-                        )}`
+                        dateRange.to,
+                        "dd/MM/yyyy"
+                      )}`
                       : "Chọn khoảng ngày"}
                   </Button>
                 </PopoverTrigger>
