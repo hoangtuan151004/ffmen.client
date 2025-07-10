@@ -27,7 +27,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { useAuth } from "@/context/auth-context";
 import { motion, AnimatePresence } from "framer-motion";
-// import { CommandMenu } from "./command-menu";
 
 export default function SiteHeader() {
   const router = useRouter();
@@ -120,12 +119,12 @@ export default function SiteHeader() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="w-52">
                     <DropdownMenuLabel className="text-sm">
-                      Xin chào, {user?.user?.fullName || "Người dùng"}
+                      Xin chào, {user?.fullName || "Người dùng"}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
 
                     <DropdownMenuItem asChild>
-                      <Link href={`profile/${user?.user?.id ?? ""}`} className="flex items-center gap-2">
+                      <Link href={`profile/${user?._id}`} className="flex items-center gap-2">
                         <UserIcon size={20} />
                         Hồ sơ
                       </Link>

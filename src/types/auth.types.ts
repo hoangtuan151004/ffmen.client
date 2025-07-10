@@ -18,7 +18,7 @@ export enum UserRole {
 }
 
 export type UserProps = {
-  id: string;
+  _id: string;
   avatar: string;
   email: string;
   fullName: string;
@@ -45,3 +45,9 @@ export interface AuthClientType {
   logout: () => void;
   updateUser: (updatedFields: Partial<JwtPayload>) => void;
 }
+
+export type ChangePasswordProps = {
+  password: string;
+  newPassword: string;
+  confirmPassword: string;
+};

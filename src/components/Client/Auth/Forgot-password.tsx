@@ -16,7 +16,7 @@ import {
   resendOtp as resendOtpService,
   verifyOtp as verifyOtpService,
   resetPassword as resetPasswordService
-} from '@/services/Auth/forgot-password.service'
+} from '@/services/Auth/auth.service'
 
 
 const steps = [

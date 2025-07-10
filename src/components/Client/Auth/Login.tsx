@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -12,8 +13,8 @@ import TextInput from "@/components/FormInput/TextInput";
 
 import { LoginInputProps } from "@/types";
 import { UserRole } from "@/types/auth.types";
-import { getUserById, loginUser } from "@/services/Auth/auth.service";
 import { useAuth } from "@/context/auth-context";
+import { loginUser, getUserById } from "@/services/Auth/auth.service";
 
 export default function Login() {
   const [isLoading, setIsLoading] = React.useState(false);
@@ -37,14 +38,18 @@ export default function Login() {
         throw new Error("Thông tin đăng nhập không hợp lệ");
       }
 
-      // Lưu token vào cookie (tự động gửi trong request)
+      // Lưu token
       Cookies.set("token", result.token, { expires: 7 });
 
-      // Lấy đầy đủ thông tin user
+      // Lấy thông tin user đầy đủ
       const fullUser = await getUserById(userId, result.token);
 
-      if (!fullUser || fullUser.isActive === false) {
-        toast.error("Tài khoản đã bị vô hiệu hóa");
+      if (!fullUser) {
+        throw new Error("Không lấy được thông tin người dùng");
+      }
+
+      if (!fullUser.isActive) {
+        toast.error("Tài khoản bị vô hiệu hóa");
         return;
       }
 
@@ -52,9 +57,8 @@ export default function Login() {
         throw new Error("Thông tin quyền không hợp lệ");
       }
 
-      // Cập nhật user vào context + sessionStorage
+      // Lưu user vào context
       login(fullUser);
-
       toast.success("Đăng nhập thành công");
       reset();
 
@@ -64,15 +68,23 @@ export default function Login() {
       } else {
         router.push("/");
       }
-    } catch (error) {
+    } catch (error: any) {
       const message =
-        error instanceof Error ? error.message : "Đăng nhập thất bại";
-      toast.error(message);
+        error?.response?.data?.message ||
+        (error instanceof Error ? error.message : "Đăng nhập thất bại");
+
+      // Xử lý lỗi HTTP cụ thể
+      if (error?.response?.status === 401) {
+        toast.error("Sai email hoặc mật khẩu");
+      } else if (error?.response?.status === 404) {
+        toast.error("Tài khoản chưa đăng ký");
+      } else {
+        toast.error(message);
+      }
     } finally {
       setIsLoading(false);
     }
   }
-
 
   return (
     <div className="grid grid-cols-2 gap-4 items-center justify-center h-screen">
@@ -86,8 +98,6 @@ export default function Login() {
         <form
           className="flex flex-col gap-4 w-full max-w-md mx-auto mt-10"
           onSubmit={handleSubmit(onSubmit)}
-          action="#"
-          method="POST"
         >
           <TextInput
             name="email"

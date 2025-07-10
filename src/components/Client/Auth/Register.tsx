@@ -1,15 +1,17 @@
 'use client'
 import React from 'react'
-import TextInput from "../../FormInput/TextInput"
-import SubmitButton from "../../FormInput/SubmitButton"
-import { useForm } from "react-hook-form"
-import { RegisterInputProps } from "@/types"
-import toast from "react-hot-toast"
+import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { Alert } from "../../ui/alert"
-import { registerUser } from"@/services/Auth/register.service"
+import { useForm } from "react-hook-form"
+import toast from "react-hot-toast"
+
+import TextInput from "@/components/FormInput/TextInput"
+import SubmitButton from "@/components/FormInput/SubmitButton"
+import { Alert } from "@/components/ui/alert"
+
+import { registerUser } from "@/services/Auth/auth.service"
+import { RegisterInputProps } from "@/types"
 
 
 
@@ -26,12 +28,12 @@ export default function Register() {
   } = useForm<RegisterInputProps>()
 
   const password = watch("password");
-  
+
   async function onSubmit(data: RegisterInputProps) {
     const payload = { ...data };
     try {
       setIsLoading(true)
-      await registerUser(payload) 
+      await registerUser(payload)
       toast.success("Đăng ký thành công")
       reset()
       router.push("/login")
