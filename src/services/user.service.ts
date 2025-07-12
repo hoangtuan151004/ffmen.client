@@ -1,5 +1,4 @@
-import { headers } from "next/headers";
-import { JwtPayload, UserProps } from "../types/auth.types";
+import { UserProps } from "../types/auth.types";
 import { baseApi } from "./baseApi";
 
 // ===========================
@@ -20,13 +19,13 @@ export const getAllUsers = async (token: string): Promise<UserProps[]> => {
 // Lấy thông tin người dùng theo ID
 // ===========================
 interface GetUserResponse {
-  user: JwtPayload;
+  user: UserProps;
 }
 
 export const getUserById = async (
   id: string,
   token: string
-): Promise<JwtPayload> => {
+): Promise<UserProps> => {
   const res = await baseApi.get<GetUserResponse>(`/users/user/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -38,16 +37,12 @@ export const getUserById = async (
 // ==========================
 // Edit password user
 // ==========================
-interface editUser {
-  user: UserProps;
-}
-
 export const changeUserPassword = async (
   id: string,
   token: string,
   newPassword: string
 ) => {
-  const res = await baseApi.post(
+  await baseApi.post(
     `/users/user/${id}`,
     { password: newPassword },
     {

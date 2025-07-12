@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { AuthClientType, JwtPayload } from "@/types/auth.types";
+import { AuthClientType, UserProps } from "@/types/auth.types";
 import { logoutApi } from "@/services/Auth/auth.service";
 import toast from "react-hot-toast";
 
@@ -16,7 +16,8 @@ const AuthContext = createContext<AuthClientType>({
 });
 
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<JwtPayload | null>(null);
+
+  const [user, setUser] = useState<UserProps | null>(null);
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
@@ -25,7 +26,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
     }
   }, []);
 
-  const login = (userData: JwtPayload) => {
+  const login = (userData: UserProps) => {
     sessionStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
@@ -46,7 +47,7 @@ export const AuthContextProvider = ({ children }: { children: React.ReactNode })
   /**
    * ✅ Hàm update thông tin user (chỉ update các field cần thiết)
    */
-  const updateUser = (updatedFields: Partial<JwtPayload>) => {
+  const updateUser = (updatedFields: Partial<UserProps>) => {
     if (!user) return;
 
     const updatedUser = { ...user, ...updatedFields };

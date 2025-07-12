@@ -40,13 +40,14 @@ export interface AuthContextType {
 }
 
 export interface AuthClientType {
-  user: JwtPayload | null;
-  login: (userData: JwtPayload) => void;
+  user: UserProps | null;
+  login: (userData: UserProps) => void;
   logout: () => void;
-  updateUser: (updatedFields: Partial<JwtPayload>) => void;
+  updateUser: (updatedFields: Partial<UserProps>) => void;
 }
 
 export type ChangePasswordProps = {
+  _id?:string
   password: string;
   newPassword: string;
   confirmPassword: string;

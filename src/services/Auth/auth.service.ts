@@ -1,6 +1,6 @@
 // src/services/auth.service.ts
 import { baseApi } from "../baseApi";
-import { JwtPayload, LoginInputProps, RegisterInputProps } from "@/types";
+import { UserProps, LoginInputProps, RegisterInputProps } from "@/types";
 
 // ===========================
 // Đăng xuất
@@ -14,7 +14,7 @@ export const logoutApi = async () => {
 // ===========================
 interface LoginResponse {
   token: string;
-  user: JwtPayload;
+  user: UserProps;
 }
 
 export const loginUser = async (data: LoginInputProps): Promise<LoginResponse> => {
@@ -26,10 +26,10 @@ export const loginUser = async (data: LoginInputProps): Promise<LoginResponse> =
 // Lấy thông tin người dùng theo ID
 // ===========================
 interface GetUserResponse {
-  user: JwtPayload;
+  user: UserProps;
 }
 
-export const getUserById = async (id: string, token: string): Promise<JwtPayload> => {
+export const getUserById = async (id: string, token: string): Promise<UserProps> => {
   const res = await baseApi.get<GetUserResponse>(`/users/user/${id}`, {
     headers: {
       Authorization: `Bearer ${token}`,

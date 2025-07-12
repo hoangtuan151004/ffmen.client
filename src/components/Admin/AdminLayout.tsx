@@ -55,7 +55,7 @@ export default function AdminPageLayout({
 
       // Lưu user vào state
       setUser(decoded);
-    } catch (err) {
+    } catch {
       toast.error("Invalid token");
       router.replace("/login");
     }

@@ -33,6 +33,8 @@ export default function SiteHeader() {
   const { user, logout } = useAuth();
   const [showInput, setShowInput] = useState(false);
 
+  console.log(user?.fullName);
+  
   const handleToggle = () => {
     setShowInput((prev) => !prev);
   };
@@ -111,9 +113,9 @@ export default function SiteHeader() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Avatar className="w-8 h-8">
-                      <AvatarImage src={user?.user?.avatar || ""} />
+                      <AvatarImage src={user?.avatar || ""} />
                       <AvatarFallback>
-                        {user?.user?.fullName?.charAt(0) || "U"}
+                        {user?.fullName?.charAt(0) || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </DropdownMenuTrigger>
@@ -122,7 +124,6 @@ export default function SiteHeader() {
                       Xin chào, {user?.fullName || "Người dùng"}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-
                     <DropdownMenuItem asChild>
                       <Link href={`profile/${user?._id}`} className="flex items-center gap-2">
                         <UserIcon size={20} />

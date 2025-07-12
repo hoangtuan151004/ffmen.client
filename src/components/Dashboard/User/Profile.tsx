@@ -8,8 +8,9 @@ import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import TextInput from "@/components/FormInput/TextInput";
 import SubmitButton from "@/components/FormInput/SubmitButton";
+
 import { useAuth } from "@/context/auth-context";
-import { JwtPayload } from "../../../types";
+import { UserProps } from "@/types";
 
 export default function Profile({ title }: { title: string }) {
   const { user, updateUser } = useAuth();
@@ -20,17 +21,17 @@ export default function Profile({ title }: { title: string }) {
     register,
     handleSubmit,
     reset,
-    setValue,
+    // setValue,
     formState: { errors },
-  } = useForm<JwtPayload>();
+  } = useForm<UserProps>();
 
   // Khi load hoặc khi click edit thì reset lại form theo user
   useEffect(() => {
-    if (user?.user) {
+    if (user) {
       reset({
-        fullName: user.user.fullName,
-        email: user.user.email,
-        phoneNumber: user.user.phoneNumber || "",
+        fullName: user?.fullName,
+        email: user?.email,
+        phoneNumber: user?.phoneNumber || "",
       });
     }
   }, [user, reset]);
@@ -44,11 +45,8 @@ export default function Profile({ title }: { title: string }) {
 
       // Cập nhật vào context
       updateUser({
-        user: {
-          ...user?.user,
-          fullName: data.fullName,
-          phoneNumber: data.phoneNumber,
-        },
+        fullName: data.fullName,
+        phoneNumber: data.phoneNumber,
       });
 
       toast.success("Cập nhật thành công");
@@ -98,7 +96,7 @@ export default function Profile({ title }: { title: string }) {
 
           <div className="flex flex-col items-center justify-center space-y-4">
             <Image
-              src={user?.user?.avatar ?? "/default-avatar.png"}
+              src={user?.avatar ?? "/default-avatar.png"}
               alt="Avatar"
               className="w-32 h-32 rounded-full object-cover border-4 border-gray-300"
               width={128}
